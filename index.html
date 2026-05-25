@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense Tracker</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f3;--surface:#ffffff;--surface2:#f2f1ee;--border:#e4e2dc;--border2:#ccc9c0;
+  --text:#1a1917;--text2:#6b6860;--text3:#9b9890;
+  --income:#0f6e56;--income-bg:#e1f5ee;--income-light:#9FE1CB;
+  --expense:#993c1d;--expense-bg:#faece7;--expense-light:#F5C4B3;
+  --cc:#3C3489;--cc-bg:#EEEDFE;--cc-light:#AFA9EC;
+  --radius:12px;--radius-sm:8px;--radius-xs:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+.app{display:flex;flex-direction:column;min-height:100vh}
+
+/* TOPBAR */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;background:var(--text);border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.topbar h1{font-size:16px;font-weight:600;letter-spacing:-0.3px}
+.user-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.user-chip{display:flex;align-items:center;gap:6px;padding:5px 12px 5px 6px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-size:13px;font-weight:500;transition:all 0.15s;white-space:nowrap}
+.user-chip:hover{border-color:var(--border2)}
+.user-chip.active{background:var(--text);border-color:var(--text);color:#fff}
+.user-chip.active .user-avatar{background:rgba(255,255,255,0.2);color:#fff}
+.user-avatar{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.add-user-btn{width:32px;height:32px;border-radius:50%;border:1.5px dashed var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:18px;transition:all 0.15s;flex-shrink:0}
+.add-user-btn:hover{background:var(--surface2);border-color:var(--text2)}
+
+/* NAV */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 20px;overflow-x:auto}
+.nav-btn{padding:12px 16px;font-size:13px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;transition:all 0.15s;font-family:'DM Sans',sans-serif;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.nav-btn i{font-size:15px}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{color:var(--text);border-bottom-color:var(--text)}
+
+/* CONTENT */
+.content{padding:20px 24px;flex:1;max-width:960px;margin:0 auto;width:100%}
+.page{display:none}.page.active{display:block}
+
+/* METRIC CARDS */
+.cards-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.metric-card .m-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;gap:5px;font-weight:500}
+.metric-card .m-label i{font-size:14px}
+.metric-card .m-value{font-size:24px;font-weight:600;letter-spacing:-0.5px}
+.metric-card .m-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.m-value.income{color:var(--income)}.m-value.expense{color:var(--expense)}.m-value.cc{color:var(--cc)}
+.m-value.positive{color:var(--income)}.m-value.negative{color:var(--expense)}
+
+/* SECTION CARDS */
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.section-card h3{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:14px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:0.4px}
+.section-card h3 i{font-size:15px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* FORMS */
+.tab-row{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:18px}
+.tab{padding:10px 18px;font-size:13px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;font-family:'DM Sans',sans-serif;transition:all 0.15s;display:flex;align-items:center;gap:6px}
+.tab i{font-size:15px}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--text);border-bottom-color:var(--text)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-grid.one{grid-template-columns:1fr}
+.form-grid.three{grid-template-columns:1fr 1fr 1fr}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.3px}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);transition:border 0.15s;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--text)}
+.field textarea{height:70px;resize:none;line-height:1.5}
+.cc-info-box{background:var(--cc-bg);border:1px solid var(--cc-light);border-radius:var(--radius-xs);padding:10px 14px;margin-bottom:12px;display:none}
+.cc-info-box label{color:var(--cc);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:5px;display:block}
+.cc-info-box select{width:100%;padding:8px 12px;border:1px solid var(--cc-light);border-radius:var(--radius-xs);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--cc-bg);color:var(--cc);outline:none}
+.submit-btn{width:100%;padding:11px;font-size:14px;font-weight:600;border:none;border-radius:var(--radius-sm);cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+.submit-btn:hover{opacity:0.88}
+.btn-expense{background:var(--expense);color:#fff}
+.btn-income{background:var(--income);color:#fff}
+
+/* TRANSACTIONS */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.filter-bar select{padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:12px;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none;cursor:pointer}
+.txn-list{display:flex;flex-direction:column;gap:6px}
+.txn-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--border);transition:border-color 0.15s}
+.txn-item:hover{border-color:var(--border2)}
+.txn-type-pill{width:32px;height:32px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.txn-type-pill.income{background:var(--income-bg);color:var(--income)}
+.txn-type-pill.expense{background:var(--expense-bg);color:var(--expense)}
+.txn-info{flex:1;min-width:0}
+.txn-desc{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
+.txn-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.txn-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.txn-amount{font-size:14px;font-weight:600}
+.txn-amount.income{color:var(--income)}.txn-amount.expense{color:var(--expense)}
+.txn-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:4px;border-radius:4px;transition:all 0.15s;line-height:1}
+.txn-del:hover{color:var(--expense);background:var(--expense-bg)}
+.cc-badge{display:inline-flex;align-items:center;gap:3px;background:var(--cc-bg);color:var(--cc);border:1px solid var(--cc-light);border-radius:4px;font-size:10px;font-weight:600;padding:2px 6px;white-space:nowrap}
+.cc-badge i{font-size:10px}
+.user-badge{display:inline-flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:4px;font-size:10px;font-weight:500;padding:2px 6px;color:var(--text2)}
+
+/* CAT BARS */
+.cat-bar-list{display:flex;flex-direction:column;gap:8px}
+.cat-row{display:flex;align-items:center;gap:10px}
+.cat-lbl{font-size:12px;color:var(--text2);width:100px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.cat-track{flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.cat-fill{height:100%;border-radius:3px;transition:width 0.4s ease}
+.cat-val{font-size:12px;color:var(--text2);width:80px;text-align:right;flex-shrink:0;font-weight:500}
+
+/* RECONCILE */
+.recon-hero{background:var(--cc-bg);border:1px solid var(--cc-light);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px}
+.recon-hero h3{font-size:12px;font-weight:600;color:var(--cc);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.recon-total{font-size:36px;font-weight:600;color:var(--cc);letter-spacing:-1px}
+.recon-sub{font-size:12px;color:#534AB7;margin-top:4px}
+.cc-cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.cc-card{background:var(--cc-bg);border:1px solid var(--cc-light);border-radius:var(--radius-sm);padding:14px}
+.cc-card .cc-card-name{font-size:11px;font-weight:600;color:#534AB7;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-card .cc-card-amt{font-size:20px;font-weight:600;color:var(--cc)}
+
+/* SETTINGS */
+.settings-info{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-xs);padding:10px 14px;font-size:12px;color:var(--text2);margin-bottom:14px;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.settings-info i{font-size:16px;flex-shrink:0;margin-top:1px}
+.conn-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+.conn-status{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:5px}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.test-btn{padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);cursor:pointer;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;transition:background 0.15s}
+.test-btn:hover{background:var(--surface2)}
+.user-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius-xs);margin-bottom:6px}
+.user-row-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+.user-row-name{flex:1;font-size:13px;font-weight:500}
+.user-row-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:15px;padding:4px;border-radius:4px;transition:all 0.15s}
+.user-row-del:hover{color:var(--expense);background:var(--expense-bg)}
+.add-user-row{display:flex;gap:8px;margin-top:8px}
+.add-user-row input{flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);outline:none}
+.add-user-row input:focus{border-color:var(--text)}
+.add-user-row input[type=color]{width:40px;padding:2px 4px;cursor:pointer;flex:none}
+.add-user-row button{padding:8px 16px;background:var(--text);color:#fff;border:none;border-radius:var(--radius-xs);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.export-row{display:flex;gap:8px}
+.export-btn{flex:1;padding:9px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);cursor:pointer;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:background 0.15s}
+.export-btn:hover{background:var(--surface2)}
+.setup-steps{font-size:13px;color:var(--text2);line-height:1.7;padding-left:18px}
+.setup-steps li{margin-bottom:6px}
+.setup-steps code{background:var(--surface2);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text)}
+.view-script-btn{margin-top:14px;padding:9px 16px;background:var(--text);color:#fff;border:none;border-radius:var(--radius-xs);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+.empty i{font-size:32px;display:block;margin-bottom:8px;opacity:0.4}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius);padding:24px;width:340px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.15)}
+.modal h3{font-size:16px;font-weight:600;margin-bottom:16px}
+.modal .field{margin-bottom:12px}
+.modal-btns{display:flex;gap:8px;margin-top:16px}
+.modal-btns button{flex:1;padding:9px;border-radius:var(--radius-xs);border:1px solid var(--border);background:none;cursor:pointer;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;transition:background 0.15s}
+.modal-btns button:hover{background:var(--surface2)}
+.modal-btns button.primary{background:var(--text);color:#fff;border-color:transparent}
+.modal-btns button.primary:hover{opacity:0.88}
+.script-modal{width:520px;max-width:95vw}
+.script-modal textarea{width:100%;height:240px;font-family:'DM Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-xs);padding:12px;resize:none;color:var(--text);outline:none;line-height:1.6}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--text);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:300;opacity:0;transition:all 0.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:600px){
+  .content{padding:16px}
+  .two-col{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .form-grid.three{grid-template-columns:1fr 1fr}
+  .cards-row{grid-template-columns:1fr 1fr}
+  .topbar{padding:0 16px}
+  .topbar h1{font-size:14px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo-icon"><i class="ti ti-wallet"></i></div>
+    <h1>Expense Tracker</h1>
+  </div>
+  <div class="user-bar" id="userBar"></div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nav-btn active" onclick="showPage('dashboard',this)"><i class="ti ti-layout-dashboard"></i> Dashboard</button>
+  <button class="nav-btn" onclick="showPage('add',this)"><i class="ti ti-plus"></i> Add Entry</button>
+  <button class="nav-btn" onclick="showPage('transactions',this)"><i class="ti ti-list"></i> Transactions</button>
+  <button class="nav-btn" onclick="showPage('reconcile',this)"><i class="ti ti-credit-card"></i> CC Reconcile</button>
+  <button class="nav-btn" onclick="showPage('settings',this)"><i class="ti ti-settings"></i> Settings</button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="cards-row" id="summaryCards"></div>
+  <div class="two-col">
+    <div class="section-card">
+      <h3><i class="ti ti-trending-down"></i> Top Expense Categories</h3>
+      <div class="cat-bar-list" id="expenseCats"></div>
+    </div>
+    <div class="section-card">
+      <h3><i class="ti ti-trending-up"></i> Income Sources</h3>
+      <div class="cat-bar-list" id="incomeCats"></div>
+    </div>
+  </div>
+  <div class="section-card">
+    <h3><i class="ti ti-history"></i> Recent Transactions</h3>
+    <div class="txn-list" id="recentTxns"></div>
+  </div>
+</div>
+
+<!-- ADD ENTRY -->
+<div id="page-add" class="page">
+  <div class="tab-row">
+    <button class="tab active" id="tab-exp" onclick="switchAddTab('expense')"><i class="ti ti-minus-circle"></i> Add Expense</button>
+    <button class="tab" id="tab-inc" onclick="switchAddTab('income')"><i class="ti ti-plus-circle"></i> Add Income</button>
+  </div>
+
+  <div id="add-expense-form" class="section-card">
+    <div class="form-grid">
+      <div class="field"><label>Date</label><input type="date" id="exp-date"></div>
+      <div class="field"><label>Amount (₹)</label><input type="number" id="exp-amount" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Category</label>
+        <select id="exp-cat">
+          <option value="">Select category</option>
+          <option>Food & Dining</option><option>Groceries</option><option>Transport</option>
+          <option>Fuel</option><option>Rent & Housing</option><option>Utilities</option>
+          <option>Entertainment</option><option>Shopping</option><option>Health & Medical</option>
+          <option>Education</option><option>Travel</option><option>EMI / Loan</option>
+          <option>Insurance</option><option>Personal Care</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Sub-category / Source</label><input type="text" id="exp-source" placeholder="e.g. Zomato, Petrol, OTT..."></div>
+    </div>
+    <div class="form-grid one">
+      <div class="field"><label>Description</label><input type="text" id="exp-desc" placeholder="Brief description..."></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Payment Mode</label>
+        <select id="exp-mode" onchange="toggleCCPanel()">
+          <option value="UPI">UPI</option><option value="Cash">Cash</option>
+          <option value="Net Banking">Net Banking</option><option value="Debit Card">Debit Card</option>
+          <option value="Credit Card">Credit Card 💳</option><option value="EMI">EMI</option>
+          <option value="Cheque">Cheque</option>
+        </select>
+      </div>
+      <div class="field"><label>Notes (optional)</label><input type="text" id="exp-notes" placeholder="Any notes..."></div>
+    </div>
+    <div class="cc-info-box" id="cc-panel">
+      <label><i class="ti ti-credit-card"></i> Select Credit Card</label>
+      <select id="exp-cc-card">
+        <option value="">Select card</option>
+        <option>HDFC Credit Card</option><option>SBI Credit Card</option>
+        <option>ICICI Credit Card</option><option>Axis Credit Card</option>
+        <option>Kotak Credit Card</option><option>AMEX Card</option><option>Other Credit Card</option>
+      </select>
+    </div>
+    <button class="submit-btn btn-expense" onclick="addTransaction('expense')"><i class="ti ti-plus"></i> Add Expense</button>
+  </div>
+
+  <div id="add-income-form" class="section-card" style="display:none">
+    <div class="form-grid">
+      <div class="field"><label>Date</label><input type="date" id="inc-date"></div>
+      <div class="field"><label>Amount (₹)</label><input type="number" id="inc-amount" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Income Category</label>
+        <select id="inc-cat">
+          <option value="">Select category</option>
+          <option>Salary</option><option>Freelance</option><option>Business Income</option>
+          <option>Rental Income</option><option>Dividends</option><option>Interest</option>
+          <option>Capital Gains</option><option>Gift / Bonus</option><option>Refund</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Source</label><input type="text" id="inc-source" placeholder="e.g. Company name, Client..."></div>
+    </div>
+    <div class="form-grid one">
+      <div class="field"><label>Description</label><input type="text" id="inc-desc" placeholder="Brief description..."></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Received In</label>
+        <select id="inc-mode">
+          <option>Bank Transfer</option><option>Cheque</option><option>Cash</option>
+          <option>UPI</option><option>Direct Deposit</option>
+        </select>
+      </div>
+      <div class="field"><label>Notes (optional)</label><input type="text" id="inc-notes" placeholder="Any notes..."></div>
+    </div>
+    <button class="submit-btn btn-income" onclick="addTransaction('income')"><i class="ti ti-plus"></i> Add Income</button>
+  </div>
+</div>
+
+<!-- TRANSACTIONS -->
+<div id="page-transactions" class="page">
+  <div class="filter-bar">
+    <select id="filter-user" onchange="renderTransactions()"><option value="">All users</option></select>
+    <select id="filter-type" onchange="renderTransactions()">
+      <option value="">All types</option>
+      <option value="income">Income only</option>
+      <option value="expense">Expense only</option>
+    </select>
+    <select id="filter-month" onchange="renderTransactions()"><option value="">All months</option></select>
+    <select id="filter-cat" onchange="renderTransactions()"><option value="">All categories</option></select>
+  </div>
+  <div class="txn-list" id="allTxns"></div>
+</div>
+
+<!-- CC RECONCILE -->
+<div id="page-reconcile" class="page">
+  <div class="recon-hero">
+    <h3><i class="ti ti-credit-card"></i> Total Credit Card Outstanding</h3>
+    <div class="recon-total" id="ccTotal">₹0</div>
+    <div class="recon-sub" id="ccCount">0 transactions</div>
+  </div>
+  <div class="cc-cards-grid" id="ccByCard"></div>
+  <div class="section-card">
+    <h3><i class="ti ti-list"></i> Credit Card Transactions</h3>
+    <div class="txn-list" id="ccTxns"></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="page-settings" class="page">
+  <div class="section-card">
+    <h3><i class="ti ti-database"></i> Google Sheets Connection</h3>
+    <div class="settings-info"><i class="ti ti-info-circle"></i> Connect your Google Sheet to sync data across all devices and users. See setup guide below.</div>
+    <div class="form-grid one">
+      <div class="field"><label>Google Sheet ID</label><input type="text" id="cfg-sheet-id" placeholder="Paste your Sheet ID here..." oninput="saveConfig()"></div>
+    </div>
+    <div class="form-grid one">
+      <div class="field"><label>Apps Script Web App URL</label><input type="text" id="cfg-script-url" placeholder="https://script.google.com/macros/s/.../exec" oninput="saveConfig()"></div>
+    </div>
+    <div class="conn-row">
+      <span class="conn-status" id="conn-status"><span class="status-dot" style="background:#ccc"></span> Not connected</span>
+      <button class="test-btn" onclick="testConnection()">Test connection</button>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h3><i class="ti ti-users"></i> Manage Users</h3>
+    <div id="userList"></div>
+    <div class="add-user-row">
+      <input type="text" id="new-user-name" placeholder="New user name...">
+      <input type="color" id="new-user-color" value="#0f6e56">
+      <button onclick="addUser()">Add</button>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h3><i class="ti ti-download"></i> Export Data</h3>
+    <div class="export-row">
+      <button class="export-btn" onclick="exportCSV()"><i class="ti ti-file-type-csv"></i> Export CSV</button>
+      <button class="export-btn" onclick="exportJSON()"><i class="ti ti-code"></i> Export JSON</button>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h3><i class="ti ti-book"></i> Google Sheets Setup Guide</h3>
+    <ol class="setup-steps">
+      <li>Open Google Sheets → create new spreadsheet → name it <em>Expense Tracker DB</em></li>
+      <li>Create 3 tabs: <code>Transactions</code>, <code>Users</code>, <code>Config</code></li>
+      <li>In <strong>Transactions</strong> tab, add row 1 headers:<br><code>id | date | type | category | source | description | amount | payment_mode | credit_card | user | notes | timestamp | reconciled</code></li>
+      <li>In <strong>Users</strong> tab, add row 1 headers: <code>id | name | color | created_at</code></li>
+      <li>Copy Sheet ID from the URL (between <code>/d/</code> and <code>/edit</code>) → paste above</li>
+      <li>Go to Extensions → Apps Script → delete default code → paste the script below</li>
+      <li>Click Deploy → New deployment → Web app → Execute as: Me → Who has access: Anyone → Deploy</li>
+      <li>Copy the <code>/exec</code> URL → paste above → click Test connection</li>
+    </ol>
+    <button class="view-script-btn" onclick="showAppsScript()"><i class="ti ti-code"></i> View Apps Script Code</button>
+  </div>
+</div>
+
+</div><!-- end content -->
+</div><!-- end app -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ADD USER MODAL -->
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal">
+    <h3>Add New User</h3>
+    <div class="field"><label>Name</label><input type="text" id="modal-user-name" placeholder="Enter name..."></div>
+    <div class="field"><label>Color</label><input type="color" id="modal-user-color" value="#0f6e56" style="width:100%;height:40px;cursor:pointer;border:1px solid var(--border);border-radius:var(--radius-xs);padding:2px 4px"></div>
+    <div class="modal-btns">
+      <button onclick="closeModal('addUserModal')">Cancel</button>
+      <button class="primary" onclick="addUserFromModal()">Add User</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPT MODAL -->
+<div class="modal-overlay" id="scriptModal">
+  <div class="modal script-modal">
+    <h3>Apps Script Code</h3>
+    <textarea id="scriptCode" readonly></textarea>
+    <div class="modal-btns">
+      <button onclick="closeModal('scriptModal')">Close</button>
+      <button class="primary" onclick="copyScript()"><i class="ti ti-copy"></i> Copy Code</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const APPS_SCRIPT_CODE = `var SHEET_ID = 'PASTE_YOUR_SHEET_ID_HERE';
+
+function doGet(e) {
+  var action = e.parameter.action;
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var result;
+  if (action === 'ping') {
+    result = {ok: true};
+  } else if (action === 'getAll') {
+    var sheet = ss.getSheetByName('Transactions');
+    var data = sheet.getDataRange().getValues();
+    result = data;
+  } else if (action === 'getUsers') {
+    var sheet = ss.getSheetByName('Users');
+    var data = sheet.getDataRange().getValues();
+    result = data;
+  } else {
+    result = {};
+  }
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var payload = JSON.parse(e.postData.contents);
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var result = {};
+  if (payload.action === 'addTransaction') {
+    var sheet = ss.getSheetByName('Transactions');
+    sheet.appendRow(payload.row);
+    result = {ok: true};
+  } else if (payload.action === 'addUser') {
+    var sheet = ss.getSheetByName('Users');
+    sheet.appendRow(payload.row);
+    result = {ok: true};
+  } else if (payload.action === 'deleteTransaction') {
+    var sheet = ss.getSheetByName('Transactions');
+    var data = sheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0] === payload.id) {
+        sheet.deleteRow(i + 1);
+        break;
+      }
+    }
+    result = {ok: true};
+  }
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+let state = {
+  users: [{id:'u1',name:'Me',color:'#0f6e56'}],
+  transactions: [],
+  activeUser: 'u1',
+  config: {sheetId:'',scriptUrl:''}
+};
+
+function loadState(){
+  try{
+    const s = localStorage.getItem('expTrackerState_v2');
+    if(s){ const p = JSON.parse(s); state = Object.assign(state, p); }
+  }catch(e){}
+  if(state.transactions.length === 0){ seedDemo(); }
+}
+
+function seedDemo(){
+  const today = new Date();
+  const days = n => { const d = new Date(today); d.setDate(d.getDate()-n); return d.toISOString().split('T')[0]; };
+  state.transactions = [
+    {id:'t1',type:'income',category:'Salary',source:'Infosys',description:'Monthly salary',amount:85000,payment_mode:'Bank Transfer',credit_card:'',user:'u1',notes:'',date:days(2),timestamp:Date.now()-200000},
+    {id:'t2',type:'expense',category:'Food & Dining',source:'Zomato',description:'Dinner order',amount:650,payment_mode:'Credit Card',credit_card:'HDFC Credit Card',user:'u1',notes:'',date:days(1),timestamp:Date.now()-100000},
+    {id:'t3',type:'expense',category:'Transport',source:'Uber',description:'Office commute',amount:280,payment_mode:'UPI',credit_card:'',user:'u1',notes:'',date:days(0),timestamp:Date.now()-50000},
+    {id:'t4',type:'expense',category:'Groceries',source:'DMart',description:'Monthly groceries',amount:3200,payment_mode:'Credit Card',credit_card:'SBI Credit Card',user:'u1',notes:'',date:days(3),timestamp:Date.now()-300000},
+    {id:'t5',type:'income',category:'Freelance',source:'Upwork',description:'Design project',amount:15000,payment_mode:'Bank Transfer',credit_card:'',user:'u1',notes:'',date:days(5),timestamp:Date.now()-500000},
+    {id:'t6',type:'expense',category:'Entertainment',source:'Netflix',description:'Subscription',amount:499,payment_mode:'Credit Card',credit_card:'HDFC Credit Card',user:'u1',notes:'',date:days(4),timestamp:Date.now()-400000},
+  ];
+}
+
+function saveState(){
+  try{ localStorage.setItem('expTrackerState_v2', JSON.stringify(state)); }catch(e){}
+}
+
+const fmt = n => '₹' + Number(n).toLocaleString('en-IN', {maximumFractionDigits:0});
+const uid = () => 't' + Date.now() + Math.random().toString(36).slice(2,6);
+
+function renderUserBar(){
+  const bar = document.getElementById('userBar');
+  bar.innerHTML = state.users.map(u => {
+    const initials = u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    return `<div class="user-chip ${u.id===state.activeUser?'active':''}" onclick="setUser('${u.id}')">
+      <div class="user-avatar" style="background:${u.color}22;color:${u.color}">${initials}</div>
+      ${u.name}
+    </div>`;
+  }).join('') + `<button class="add-user-btn" onclick="openModal('addUserModal')" title="Add user">+</button>`;
+}
+
+function setUser(id){
+  state.activeUser = id;
+  saveState();
+  renderAll();
+}
+
+function renderDashboard(){
+  const txns = state.transactions.filter(t => t.user === state.activeUser);
+  const totalIncome = txns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const totalExpense = txns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const ccExpense = txns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').reduce((s,t)=>s+t.amount,0);
+  const net = totalIncome - totalExpense;
+  const savingsRate = totalIncome > 0 ? Math.round((net/totalIncome)*100) : 0;
+
+  document.getElementById('summaryCards').innerHTML = `
+    <div class="metric-card">
+      <div class="m-label" style="color:var(--income)"><i class="ti ti-trending-up"></i> Total Income</div>
+      <div class="m-value income">${fmt(totalIncome)}</div>
+      <div class="m-sub">${txns.filter(t=>t.type==='income').length} transactions</div>
+    </div>
+    <div class="metric-card">
+      <div class="m-label" style="color:var(--expense)"><i class="ti ti-trending-down"></i> Total Expenses</div>
+      <div class="m-value expense">${fmt(totalExpense)}</div>
+      <div class="m-sub">${txns.filter(t=>t.type==='expense').length} transactions</div>
+    </div>
+    <div class="metric-card">
+      <div class="m-label"><i class="ti ti-scale"></i> Net Balance</div>
+      <div class="m-value ${net>=0?'positive':'negative'}">${fmt(net)}</div>
+      <div class="m-sub">Savings rate: ${savingsRate}%</div>
+    </div>
+    <div class="metric-card">
+      <div class="m-label" style="color:var(--cc)"><i class="ti ti-credit-card"></i> CC Outstanding</div>
+      <div class="m-value cc">${fmt(ccExpense)}</div>
+      <div class="m-sub">${txns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').length} CC transactions</div>
+    </div>`;
+
+  const expTotals = {};
+  txns.filter(t=>t.type==='expense').forEach(t=>{ expTotals[t.category]=(expTotals[t.category]||0)+t.amount; });
+  const maxExp = Math.max(...Object.values(expTotals), 1);
+  const topExp = Object.entries(expTotals).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  document.getElementById('expenseCats').innerHTML = topExp.length
+    ? topExp.map(([k,v])=>`<div class="cat-row"><div class="cat-lbl" title="${k}">${k}</div><div class="cat-track"><div class="cat-fill" style="width:${(v/maxExp*100).toFixed(0)}%;background:var(--expense-light)"></div></div><div class="cat-val">${fmt(v)}</div></div>`).join('')
+    : '<div class="empty"><i class="ti ti-chart-bar"></i>No expense data yet</div>';
+
+  const incTotals = {};
+  txns.filter(t=>t.type==='income').forEach(t=>{ incTotals[t.category]=(incTotals[t.category]||0)+t.amount; });
+  const maxInc = Math.max(...Object.values(incTotals), 1);
+  document.getElementById('incomeCats').innerHTML = Object.keys(incTotals).length
+    ? Object.entries(incTotals).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([k,v])=>`<div class="cat-row"><div class="cat-lbl" title="${k}">${k}</div><div class="cat-track"><div class="cat-fill" style="width:${(v/maxInc*100).toFixed(0)}%;background:var(--income-light)"></div></div><div class="cat-val">${fmt(v)}</div></div>`).join('')
+    : '<div class="empty"><i class="ti ti-chart-bar"></i>No income data yet</div>';
+
+  const recent = [...txns].sort((a,b)=>b.timestamp-a.timestamp).slice(0,5);
+  document.getElementById('recentTxns').innerHTML = recent.length
+    ? recent.map(t=>txnHTML(t)).join('')
+    : '<div class="empty"><i class="ti ti-inbox"></i>No transactions yet. Add one!</div>';
+}
+
+function txnHTML(t){
+  const u = state.users.find(u=>u.id===t.user) || {name:'?',color:'#888'};
+  const ccBadge = t.payment_mode==='Credit Card'
+    ? `<span class="cc-badge"><i class="ti ti-credit-card"></i>${t.credit_card||'Credit Card'}</span>` : '';
+  const userBadge = state.users.length > 1
+    ? `<span class="user-badge">${u.name}</span>` : '';
+  return `<div class="txn-item">
+    <div class="txn-type-pill ${t.type}"><i class="ti ti-${t.type==='income'?'arrow-down-left':'arrow-up-right'}"></i></div>
+    <div class="txn-info">
+      <div class="txn-desc">${t.description||t.category} ${ccBadge} ${userBadge}</div>
+      <div class="txn-meta">${t.date} &middot; ${t.category}${t.source?' &middot; '+t.source:''} &middot; ${t.payment_mode}</div>
+    </div>
+    <div class="txn-right">
+      <div class="txn-amount ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
+      <button class="txn-del" onclick="deleteTxn('${t.id}')" title="Delete"><i class="ti ti-trash"></i></button>
+    </div>
+  </div>`;
+}
+
+function renderTransactions(){
+  const fUser = document.getElementById('filter-user').value;
+  const fType = document.getElementById('filter-type').value;
+  const fMonth = document.getElementById('filter-month').value;
+  const fCat = document.getElementById('filter-cat').value;
+
+  let txns = [...state.transactions].sort((a,b)=>b.timestamp-a.timestamp);
+  if(fUser) txns = txns.filter(t=>t.user===fUser);
+  if(fType) txns = txns.filter(t=>t.type===fType);
+  if(fMonth) txns = txns.filter(t=>t.date.startsWith(fMonth));
+  if(fCat) txns = txns.filter(t=>t.category===fCat);
+
+  document.getElementById('allTxns').innerHTML = txns.length
+    ? txns.map(t=>txnHTML(t)).join('')
+    : '<div class="empty"><i class="ti ti-filter-off"></i>No transactions match the selected filters</div>';
+
+  const uSel = document.getElementById('filter-user');
+  const curU = uSel.value;
+  uSel.innerHTML = '<option value="">All users</option>' + state.users.map(u=>`<option value="${u.id}" ${u.id===curU?'selected':''}>${u.name}</option>`).join('');
+
+  const months = [...new Set(state.transactions.map(t=>t.date.slice(0,7)))].sort().reverse();
+  const curM = document.getElementById('filter-month').value;
+  document.getElementById('filter-month').innerHTML = '<option value="">All months</option>' + months.map(m=>`<option value="${m}" ${m===curM?'selected':''}>${m}</option>`).join('');
+
+  const cats = [...new Set(state.transactions.map(t=>t.category))].sort();
+  const curC = document.getElementById('filter-cat').value;
+  document.getElementById('filter-cat').innerHTML = '<option value="">All categories</option>' + cats.map(c=>`<option value="${c}" ${c===curC?'selected':''}>${c}</option>`).join('');
+}
+
+function renderReconcile(){
+  const ccTxns = state.transactions.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card'&&t.user===state.activeUser);
+  const total = ccTxns.reduce((s,t)=>s+t.amount,0);
+  document.getElementById('ccTotal').textContent = fmt(total);
+  document.getElementById('ccCount').textContent = `${ccTxns.length} credit card transaction${ccTxns.length!==1?'s':''}`;
+
+  const byCard = {};
+  ccTxns.forEach(t=>{ byCard[t.credit_card||'Other']=(byCard[t.credit_card||'Other']||0)+t.amount; });
+  document.getElementById('ccByCard').innerHTML = Object.entries(byCard).map(([k,v])=>`
+    <div class="cc-card">
+      <div class="cc-card-name"><i class="ti ti-credit-card"></i> ${k}</div>
+      <div class="cc-card-amt">${fmt(v)}</div>
+    </div>`).join('') || '';
+
+  document.getElementById('ccTxns').innerHTML = ccTxns.length
+    ? [...ccTxns].sort((a,b)=>b.timestamp-a.timestamp).map(t=>txnHTML(t)).join('')
+    : '<div class="empty"><i class="ti ti-credit-card-off"></i>No credit card transactions</div>';
+}
+
+function renderUserSettings(){
+  document.getElementById('userList').innerHTML = state.users.map(u => {
+    const initials = u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    return `<div class="user-row">
+      <div class="user-row-avatar" style="background:${u.color}22;color:${u.color}">${initials}</div>
+      <div class="user-row-name">${u.name}</div>
+      ${state.users.length>1?`<button class="user-row-del" onclick="deleteUser('${u.id}')"><i class="ti ti-trash"></i></button>`:''}
+    </div>`;
+  }).join('');
+  const cfg = state.config || {};
+  document.getElementById('cfg-sheet-id').value = cfg.sheetId || '';
+  document.getElementById('cfg-script-url').value = cfg.scriptUrl || '';
+}
+
+function renderAll(){
+  renderUserBar();
+  renderDashboard();
+  renderTransactions();
+  renderReconcile();
+  renderUserSettings();
+}
+
+function showPage(id, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='transactions') renderTransactions();
+  if(id==='reconcile') renderReconcile();
+  if(id==='settings') renderUserSettings();
+}
+
+function switchAddTab(tab){
+  document.getElementById('add-expense-form').style.display = tab==='expense'?'block':'none';
+  document.getElementById('add-income-form').style.display = tab==='income'?'block':'none';
+  document.getElementById('tab-exp').classList.toggle('active', tab==='expense');
+  document.getElementById('tab-inc').classList.toggle('active', tab==='income');
+}
+
+function toggleCCPanel(){
+  const mode = document.getElementById('exp-mode').value;
+  document.getElementById('cc-panel').style.display = mode==='Credit Card'?'block':'none';
+}
+
+function addTransaction(type){
+  if(type==='expense'){
+    const amount = parseFloat(document.getElementById('exp-amount').value);
+    const cat = document.getElementById('exp-cat').value;
+    if(!amount || !cat){ showToast('Please fill in amount and category'); return; }
+    const t = {
+      id: uid(), type: 'expense',
+      category: cat,
+      source: document.getElementById('exp-source').value,
+      description: document.getElementById('exp-desc').value,
+      amount: amount,
+      payment_mode: document.getElementById('exp-mode').value,
+      credit_card: document.getElementById('exp-mode').value==='Credit Card' ? document.getElementById('exp-cc-card').value : '',
+      user: state.activeUser,
+      notes: document.getElementById('exp-notes').value,
+      date: document.getElementById('exp-date').value || new Date().toISOString().split('T')[0],
+      timestamp: Date.now()
+    };
+    state.transactions.push(t);
+    saveState(); pushToSheet(t);
+    ['exp-amount','exp-desc','exp-source','exp-notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('exp-cat').value='';
+    document.getElementById('cc-panel').style.display='none';
+    showToast('Expense added successfully!');
+  } else {
+    const amount = parseFloat(document.getElementById('inc-amount').value);
+    const cat = document.getElementById('inc-cat').value;
+    if(!amount || !cat){ showToast('Please fill in amount and category'); return; }
+    const t = {
+      id: uid(), type: 'income',
+      category: cat,
+      source: document.getElementById('inc-source').value,
+      description: document.getElementById('inc-desc').value,
+      amount: amount,
+      payment_mode: document.getElementById('inc-mode').value,
+      credit_card: '',
+      user: state.activeUser,
+      notes: document.getElementById('inc-notes').value,
+      date: document.getElementById('inc-date').value || new Date().toISOString().split('T')[0],
+      timestamp: Date.now()
+    };
+    state.transactions.push(t);
+    saveState(); pushToSheet(t);
+    ['inc-amount','inc-desc','inc-source','inc-notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('inc-cat').value='';
+    showToast('Income added successfully!');
+  }
+  renderAll();
+  showPage('dashboard');
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+}
+
+function deleteTxn(id){
+  if(!confirm('Delete this transaction?')) return;
+  const t = state.transactions.find(t=>t.id===id);
+  state.transactions = state.transactions.filter(t=>t.id!==id);
+  saveState();
+  deleteFromSheet(id);
+  renderAll();
+  showToast('Transaction deleted');
+}
+
+function addUser(){
+  const name = document.getElementById('new-user-name').value.trim();
+  if(!name) return;
+  const color = document.getElementById('new-user-color').value;
+  state.users.push({id:'u'+Date.now(), name, color});
+  document.getElementById('new-user-name').value = '';
+  saveState(); renderAll();
+  showToast('User added!');
+}
+
+function addUserFromModal(){
+  const name = document.getElementById('modal-user-name').value.trim();
+  if(!name) return;
+  const color = document.getElementById('modal-user-color').value;
+  state.users.push({id:'u'+Date.now(), name, color});
+  document.getElementById('modal-user-name').value = '';
+  closeModal('addUserModal');
+  saveState(); renderAll();
+  showToast('User added!');
+}
+
+function deleteUser(id){
+  if(state.users.length <= 1) return;
+  if(!confirm('Remove this user?')) return;
+  state.users = state.users.filter(u=>u.id!==id);
+  if(state.activeUser===id) state.activeUser = state.users[0].id;
+  saveState(); renderAll();
+}
+
+function saveConfig(){
+  state.config = {
+    sheetId: document.getElementById('cfg-sheet-id').value.trim(),
+    scriptUrl: document.getElementById('cfg-script-url').value.trim()
+  };
+  saveState();
+}
+
+function testConnection(){
+  const url = state.config && state.config.scriptUrl;
+  if(!url){ showToast('Please enter your Apps Script URL first'); return; }
+  const status = document.getElementById('conn-status');
+  status.innerHTML = '<span class="status-dot" style="background:#EF9F27"></span> Testing...';
+  fetch(url + '?action=ping')
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.ok) status.innerHTML = '<span class="status-dot" style="background:#0f6e56"></span> Connected ✓';
+      else status.innerHTML = '<span class="status-dot" style="background:#993c1d"></span> Connection failed';
+    })
+    .catch(()=>{ status.innerHTML = '<span class="status-dot" style="background:#993c1d"></span> Could not connect'; });
+}
+
+async function pushToSheet(t){
+  const url = state.config && state.config.scriptUrl;
+  if(!url) return;
+  try{
+    await fetch(url, {method:'POST', body: JSON.stringify({
+      action: 'addTransaction',
+      row: [t.id,t.date,t.type,t.category,t.source,t.description,t.amount,t.payment_mode,t.credit_card,t.user,t.notes,new Date().toISOString(),false]
+    })});
+  }catch(e){}
+}
+
+async function deleteFromSheet(id){
+  const url = state.config && state.config.scriptUrl;
+  if(!url) return;
+  try{
+    await fetch(url, {method:'POST', body: JSON.stringify({action:'deleteTransaction', id})});
+  }catch(e){}
+}
+
+function showAppsScript(){
+  document.getElementById('scriptCode').value = APPS_SCRIPT_CODE;
+  openModal('scriptModal');
+}
+
+function copyScript(){
+  navigator.clipboard.writeText(APPS_SCRIPT_CODE).then(()=>showToast('Copied to clipboard!'));
+}
+
+function exportCSV(){
+  const headers = ['id','date','type','category','source','description','amount','payment_mode','credit_card','user','notes'];
+  const rows = state.transactions.map(t=>headers.map(h=>`"${(t[h]||'').toString().replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','),...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'expense_tracker_' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  showToast('CSV downloaded!');
+}
+
+function exportJSON(){
+  const a = document.createElement('a');
+  a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(state.transactions, null, 2));
+  a.download = 'expense_tracker_' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  showToast('JSON downloaded!');
+}
+
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click', e=>{ if(e.target===el) el.classList.remove('open'); });
+});
+
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('exp-date').value = today;
+document.getElementById('inc-date').value = today;
+
+loadState();
+renderAll();
+</script>
+</body>
+</html>
