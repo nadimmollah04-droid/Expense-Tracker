@@ -486,19 +486,6 @@ function loadState(){
   if(state.transactions.length === 0){ seedDemo(); }
 }
 
-function seedDemo(){
-  const today = new Date();
-  const days = n => { const d = new Date(today); d.setDate(d.getDate()-n); return d.toISOString().split('T')[0]; };
-  state.transactions = [
-    {id:'t1',type:'income',category:'Salary',source:'Infosys',description:'Monthly salary',amount:85000,payment_mode:'Bank Transfer',credit_card:'',user:'u1',notes:'',date:days(2),timestamp:Date.now()-200000},
-    {id:'t2',type:'expense',category:'Food & Dining',source:'Zomato',description:'Dinner order',amount:650,payment_mode:'Credit Card',credit_card:'HDFC Credit Card',user:'u1',notes:'',date:days(1),timestamp:Date.now()-100000},
-    {id:'t3',type:'expense',category:'Transport',source:'Uber',description:'Office commute',amount:280,payment_mode:'UPI',credit_card:'',user:'u1',notes:'',date:days(0),timestamp:Date.now()-50000},
-    {id:'t4',type:'expense',category:'Groceries',source:'DMart',description:'Monthly groceries',amount:3200,payment_mode:'Credit Card',credit_card:'SBI Credit Card',user:'u1',notes:'',date:days(3),timestamp:Date.now()-300000},
-    {id:'t5',type:'income',category:'Freelance',source:'Upwork',description:'Design project',amount:15000,payment_mode:'Bank Transfer',credit_card:'',user:'u1',notes:'',date:days(5),timestamp:Date.now()-500000},
-    {id:'t6',type:'expense',category:'Entertainment',source:'Netflix',description:'Subscription',amount:499,payment_mode:'Credit Card',credit_card:'HDFC Credit Card',user:'u1',notes:'',date:days(4),timestamp:Date.now()-400000},
-  ];
-}
-
 function saveState(){
   try{ localStorage.setItem('expTrackerState_v2', JSON.stringify(state)); }catch(e){}
 }
