@@ -15,6 +15,7 @@
   --income:#0f6e56;--income-bg:#e1f5ee;--income-light:#9FE1CB;
   --expense:#993c1d;--expense-bg:#faece7;--expense-light:#F5C4B3;
   --cc:#3C3489;--cc-bg:#EEEDFE;--cc-light:#AFA9EC;
+  --invest:#7A4F1E;--invest-bg:#FEF3E7;--invest-light:#F5C98A;
   --radius:12px;--radius-sm:8px;--radius-xs:6px;
   --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
 }
@@ -92,19 +93,43 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .txn-type-pill{width:32px;height:32px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .txn-type-pill.income{background:var(--income-bg);color:var(--income)}
 .txn-type-pill.expense{background:var(--expense-bg);color:var(--expense)}
+.txn-type-pill.investment{background:var(--invest-bg);color:var(--invest)}
 .txn-info{flex:1;min-width:0}
 .txn-desc{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
 .txn-meta{font-size:11px;color:var(--text3);margin-top:2px}
 .txn-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
 .txn-amount{font-size:14px;font-weight:600}
-.txn-amount.income{color:var(--income)}.txn-amount.expense{color:var(--expense)}
+.txn-amount.income{color:var(--income)}.txn-amount.expense{color:var(--expense)}.txn-amount.investment{color:var(--invest)}
 .txn-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:4px;border-radius:4px;transition:all 0.15s;line-height:1}
 .txn-del:hover{color:var(--expense);background:var(--expense-bg)}
 .cc-badge{display:inline-flex;align-items:center;gap:3px;background:var(--cc-bg);color:var(--cc);border:1px solid var(--cc-light);border-radius:4px;font-size:10px;font-weight:600;padding:2px 6px;white-space:nowrap}
 .cc-badge i{font-size:10px}
+.bank-badge{display:inline-flex;align-items:center;gap:3px;background:#EEF6FF;color:#1a5db5;border:1px solid #B3D4F7;border-radius:4px;font-size:10px;font-weight:600;padding:2px 6px;white-space:nowrap}
+.bank-badge i{font-size:10px}
+.invest-badge{display:inline-flex;align-items:center;gap:3px;background:var(--invest-bg);color:var(--invest);border:1px solid var(--invest-light);border-radius:4px;font-size:10px;font-weight:600;padding:2px 6px;white-space:nowrap}
+.invest-badge i{font-size:10px}
 .user-badge{display:inline-flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:4px;font-size:10px;font-weight:500;padding:2px 6px;color:var(--text2)}
-
-/* CAT BARS */
+/* BANK SUMMARY */
+.bank-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.bank-card{background:#EEF6FF;border:1px solid #B3D4F7;border-radius:var(--radius-sm);padding:12px 14px}
+.bank-card .b-name{font-size:11px;font-weight:600;color:#1a5db5;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.bank-card .b-amt{font-size:18px;font-weight:600;color:var(--text)}
+.bank-card .b-sub{font-size:11px;color:var(--text3);margin-top:2px}
+/* INVEST PAGE */
+.invest-hero{background:var(--invest-bg);border:1px solid var(--invest-light);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px}
+.invest-hero h3{font-size:12px;font-weight:600;color:var(--invest);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.invest-hero .i-total{font-size:36px;font-weight:600;color:var(--invest);letter-spacing:-1px}
+.invest-hero .i-sub{font-size:12px;color:#9c6f3a;margin-top:4px}
+.invest-sector-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.invest-sector-card{background:var(--invest-bg);border:1px solid var(--invest-light);border-radius:var(--radius-sm);padding:14px}
+.invest-sector-card .is-name{font-size:11px;font-weight:600;color:#9c6f3a;margin-bottom:4px}
+.invest-sector-card .is-amt{font-size:20px;font-weight:600;color:var(--invest)}
+.invest-sector-card .is-sub{font-size:11px;color:#b08040;margin-top:2px}
+/* UPI BANK PANEL */
+.upi-info-box{background:#EEF6FF;border:1px solid #B3D4F7;border-radius:var(--radius-xs);padding:10px 14px;margin-bottom:12px;display:none}
+.upi-info-box label{color:#1a5db5;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:5px;display:block}
+.upi-info-box select{width:100%;padding:8px 12px;border:1px solid #B3D4F7;border-radius:var(--radius-xs);font-size:13px;font-family:'DM Sans',sans-serif;background:#EEF6FF;color:#1a5db5;outline:none}
+.btn-invest{background:var(--invest);color:#fff}
 .cat-bar-list{display:flex;flex-direction:column;gap:8px}
 .cat-row{display:flex;align-items:center;gap:10px}
 .cat-lbl{font-size:12px;color:var(--text2);width:100px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
@@ -198,6 +223,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <button class="nav-btn active" onclick="showPage('dashboard',this)"><i class="ti ti-layout-dashboard"></i> Dashboard</button>
   <button class="nav-btn" onclick="showPage('add',this)"><i class="ti ti-plus"></i> Add Entry</button>
   <button class="nav-btn" onclick="showPage('transactions',this)"><i class="ti ti-list"></i> Transactions</button>
+  <button class="nav-btn" onclick="showPage('investments',this)"><i class="ti ti-chart-candle"></i> Investments</button>
   <button class="nav-btn" onclick="showPage('reconcile',this)"><i class="ti ti-credit-card"></i> CC Reconcile</button>
   <button class="nav-btn" onclick="showPage('settings',this)"><i class="ti ti-settings"></i> Settings</button>
 </div>
@@ -219,6 +245,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
   </div>
   <div class="section-card">
+    <h3><i class="ti ti-building-bank"></i> Expense by Bank Account (UPI)</h3>
+    <div class="bank-grid" id="bankSummary"></div>
+  </div>
+  <div class="section-card">
+    <h3><i class="ti ti-chart-candle"></i> Investments by Sector</h3>
+    <div class="bank-grid" id="investSummaryDash"></div>
+  </div>
+  <div class="section-card">
     <h3><i class="ti ti-history"></i> Recent Transactions</h3>
     <div class="txn-list" id="recentTxns"></div>
   </div>
@@ -229,6 +263,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="tab-row">
     <button class="tab active" id="tab-exp" onclick="switchAddTab('expense')"><i class="ti ti-minus-circle"></i> Add Expense</button>
     <button class="tab" id="tab-inc" onclick="switchAddTab('income')"><i class="ti ti-plus-circle"></i> Add Income</button>
+    <button class="tab" id="tab-inv" onclick="switchAddTab('investment')"><i class="ti ti-chart-candle"></i> Add Investment</button>
   </div>
 
   <div id="add-expense-form" class="section-card">
@@ -262,6 +297,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         </select>
       </div>
       <div class="field"><label>Notes (optional)</label><input type="text" id="exp-notes" placeholder="Any notes..."></div>
+    </div>
+    <div class="upi-info-box" id="upi-panel">
+      <label><i class="ti ti-building-bank"></i> UPI Bank Account</label>
+      <select id="exp-upi-bank">
+        <option value="">Select bank</option>
+        <option>SBI Bank</option><option>HDFC Bank</option><option>ICICI Bank</option>
+        <option>DBS Bank</option><option>Axis Bank</option><option>Kotak Bank</option>
+        <option>Yes Bank</option><option>PNB Bank</option><option>BOB Bank</option><option>Other Bank</option>
+      </select>
     </div>
     <div class="cc-info-box" id="cc-panel">
       <label><i class="ti ti-credit-card"></i> Select Credit Card</label>
@@ -305,6 +349,51 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
     <button class="submit-btn btn-income" onclick="addTransaction('income')"><i class="ti ti-plus"></i> Add Income</button>
   </div>
+
+  <div id="add-investment-form" class="section-card" style="display:none">
+    <div class="form-grid">
+      <div class="field"><label>Date</label><input type="date" id="inv-date"></div>
+      <div class="field"><label>Amount (₹)</label><input type="number" id="inv-amount" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Investment Sector</label>
+        <select id="inv-sector">
+          <option value="">Select sector</option>
+          <option>Fixed Deposit (FD)</option>
+          <option>Recurring Deposit (RD)</option>
+          <option>Mutual Funds – Equity</option>
+          <option>Mutual Funds – Debt</option>
+          <option>Mutual Funds – Hybrid</option>
+          <option>Stocks – Large Cap</option>
+          <option>Stocks – Mid Cap</option>
+          <option>Stocks – Small Cap</option>
+          <option>PPF</option>
+          <option>NPS</option>
+          <option>Gold / SGBs</option>
+          <option>Real Estate</option>
+          <option>Crypto</option>
+          <option>Bonds / Debentures</option>
+          <option>Other Investment</option>
+        </select>
+      </div>
+      <div class="field"><label>Platform / Broker</label><input type="text" id="inv-platform" placeholder="e.g. Zerodha, Groww, SBI, HDFC..."></div>
+    </div>
+    <div class="form-grid one">
+      <div class="field"><label>Description</label><input type="text" id="inv-desc" placeholder="e.g. HDFC Top 100 Fund SIP, Reliance Industries..."></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Paid From</label>
+        <select id="inv-bank">
+          <option value="">Select bank</option>
+          <option>SBI Bank</option><option>HDFC Bank</option><option>ICICI Bank</option>
+          <option>DBS Bank</option><option>Axis Bank</option><option>Kotak Bank</option>
+          <option>Yes Bank</option><option>PNB Bank</option><option>Other Bank</option>
+        </select>
+      </div>
+      <div class="field"><label>Notes (optional)</label><input type="text" id="inv-notes" placeholder="Units, NAV, expected returns..."></div>
+    </div>
+    <button class="submit-btn btn-invest" onclick="addTransaction('investment')"><i class="ti ti-plus"></i> Add Investment</button>
+  </div>
 </div>
 
 <!-- TRANSACTIONS -->
@@ -315,11 +404,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <option value="">All types</option>
       <option value="income">Income only</option>
       <option value="expense">Expense only</option>
+      <option value="investment">Investments only</option>
     </select>
     <select id="filter-month" onchange="renderTransactions()"><option value="">All months</option></select>
     <select id="filter-cat" onchange="renderTransactions()"><option value="">All categories</option></select>
   </div>
   <div class="txn-list" id="allTxns"></div>
+</div>
+
+<!-- INVESTMENTS -->
+<div id="page-investments" class="page">
+  <div class="invest-hero">
+    <h3><i class="ti ti-chart-candle"></i> Total Invested</h3>
+    <div class="i-total" id="investTotal">₹0</div>
+    <div class="i-sub" id="investCount">0 investment transactions</div>
+  </div>
+  <div class="invest-sector-grid" id="investBySector"></div>
+  <div class="section-card">
+    <h3><i class="ti ti-list"></i> Investment Transactions</h3>
+    <div class="txn-list" id="investTxns"></div>
+  </div>
 </div>
 
 <!-- CC RECONCILE -->
@@ -486,6 +590,23 @@ function loadState(){
   if(state.transactions.length === 0){ seedDemo(); }
 }
 
+function seedDemo(){
+  const today = new Date();
+  const days = n => { const d = new Date(today); d.setDate(d.getDate()-n); return d.toISOString().split('T')[0]; };
+  state.transactions = [
+    {id:'t1',type:'income',category:'Salary',source:'Infosys',description:'Monthly salary',amount:85000,payment_mode:'Bank Transfer',credit_card:'',upi_bank:'',invest_sector:'',invest_platform:'',user:'u1',notes:'',date:days(2),timestamp:Date.now()-200000},
+    {id:'t2',type:'expense',category:'Food & Dining',source:'Zomato',description:'Dinner order',amount:650,payment_mode:'Credit Card',credit_card:'HDFC Credit Card',upi_bank:'',invest_sector:'',invest_platform:'',user:'u1',notes:'',date:days(1),timestamp:Date.now()-100000},
+    {id:'t3',type:'expense',category:'Transport',source:'Uber',description:'Office commute',amount:280,payment_mode:'UPI',credit_card:'',upi_bank:'HDFC Bank',invest_sector:'',invest_platform:'',user:'u1',notes:'',date:days(0),timestamp:Date.now()-50000},
+    {id:'t4',type:'expense',category:'Groceries',source:'DMart',description:'Monthly groceries',amount:3200,payment_mode:'UPI',credit_card:'',upi_bank:'SBI Bank',invest_sector:'',invest_platform:'',user:'u1',notes:'',date:days(3),timestamp:Date.now()-300000},
+    {id:'t5',type:'income',category:'Freelance',source:'Upwork',description:'Design project',amount:15000,payment_mode:'Bank Transfer',credit_card:'',upi_bank:'',invest_sector:'',invest_platform:'',user:'u1',notes:'',date:days(5),timestamp:Date.now()-500000},
+    {id:'t6',type:'expense',category:'Entertainment',source:'Netflix',description:'Subscription',amount:499,payment_mode:'Credit Card',credit_card:'HDFC Credit Card',upi_bank:'',invest_sector:'',invest_platform:'',user:'u1',notes:'',date:days(4),timestamp:Date.now()-400000},
+    {id:'t7',type:'investment',category:'Investment',source:'Zerodha',description:'HDFC Top 100 Fund SIP',amount:5000,payment_mode:'UPI',credit_card:'',upi_bank:'HDFC Bank',invest_sector:'Mutual Funds – Equity',invest_platform:'Zerodha',user:'u1',notes:'Monthly SIP',date:days(1),timestamp:Date.now()-80000},
+    {id:'t8',type:'investment',category:'Investment',source:'SBI',description:'FD 1 Year',amount:50000,payment_mode:'Bank Transfer',credit_card:'',upi_bank:'SBI Bank',invest_sector:'Fixed Deposit (FD)',invest_platform:'SBI',user:'u1',notes:'7.5% p.a.',date:days(6),timestamp:Date.now()-600000},
+    {id:'t9',type:'investment',category:'Investment',source:'Groww',description:'Tata Motors shares',amount:12000,payment_mode:'UPI',credit_card:'',upi_bank:'ICICI Bank',invest_sector:'Stocks – Large Cap',invest_platform:'Groww',user:'u1',notes:'50 shares @ 240',date:days(7),timestamp:Date.now()-700000},
+    {id:'t10',type:'expense',category:'Fuel',source:'BPCL',description:'Petrol',amount:1500,payment_mode:'UPI',credit_card:'',upi_bank:'ICICI Bank',invest_sector:'',invest_platform:'',user:'u1',notes:'',date:days(2),timestamp:Date.now()-180000},
+  ];
+}
+
 function saveState(){
   try{ localStorage.setItem('expTrackerState_v2', JSON.stringify(state)); }catch(e){}
 }
@@ -514,9 +635,10 @@ function renderDashboard(){
   const txns = state.transactions.filter(t => t.user === state.activeUser);
   const totalIncome = txns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
   const totalExpense = txns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const totalInvest = txns.filter(t=>t.type==='investment').reduce((s,t)=>s+t.amount,0);
   const ccExpense = txns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').reduce((s,t)=>s+t.amount,0);
-  const net = totalIncome - totalExpense;
-  const savingsRate = totalIncome > 0 ? Math.round((net/totalIncome)*100) : 0;
+  const net = totalIncome - totalExpense - totalInvest;
+  const savingsRate = totalIncome > 0 ? Math.round(((totalIncome-totalExpense)/totalIncome)*100) : 0;
 
   document.getElementById('summaryCards').innerHTML = `
     <div class="metric-card">
@@ -530,6 +652,11 @@ function renderDashboard(){
       <div class="m-sub">${txns.filter(t=>t.type==='expense').length} transactions</div>
     </div>
     <div class="metric-card">
+      <div class="m-label" style="color:var(--invest)"><i class="ti ti-chart-candle"></i> Total Invested</div>
+      <div class="m-value" style="color:var(--invest)">${fmt(totalInvest)}</div>
+      <div class="m-sub">${txns.filter(t=>t.type==='investment').length} investments</div>
+    </div>
+    <div class="metric-card">
       <div class="m-label"><i class="ti ti-scale"></i> Net Balance</div>
       <div class="m-value ${net>=0?'positive':'negative'}">${fmt(net)}</div>
       <div class="m-sub">Savings rate: ${savingsRate}%</div>
@@ -537,7 +664,7 @@ function renderDashboard(){
     <div class="metric-card">
       <div class="m-label" style="color:var(--cc)"><i class="ti ti-credit-card"></i> CC Outstanding</div>
       <div class="m-value cc">${fmt(ccExpense)}</div>
-      <div class="m-sub">${txns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').length} CC transactions</div>
+      <div class="m-sub">${txns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').length} CC txns</div>
     </div>`;
 
   const expTotals = {};
@@ -555,6 +682,42 @@ function renderDashboard(){
     ? Object.entries(incTotals).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([k,v])=>`<div class="cat-row"><div class="cat-lbl" title="${k}">${k}</div><div class="cat-track"><div class="cat-fill" style="width:${(v/maxInc*100).toFixed(0)}%;background:var(--income-light)"></div></div><div class="cat-val">${fmt(v)}</div></div>`).join('')
     : '<div class="empty"><i class="ti ti-chart-bar"></i>No income data yet</div>';
 
+  // Bank-wise UPI expense summary
+  const bankTotals = {};
+  txns.filter(t=>t.type==='expense'&&t.payment_mode==='UPI'&&t.upi_bank).forEach(t=>{
+    bankTotals[t.upi_bank]=(bankTotals[t.upi_bank]||{amt:0,count:0});
+    bankTotals[t.upi_bank].amt+=t.amount;
+    bankTotals[t.upi_bank].count++;
+  });
+  const bankEl = document.getElementById('bankSummary');
+  if(Object.keys(bankTotals).length){
+    bankEl.innerHTML = Object.entries(bankTotals).sort((a,b)=>b[1].amt-a[1].amt).map(([k,v])=>`
+      <div class="bank-card">
+        <div class="b-name"><i class="ti ti-building-bank"></i>${k}</div>
+        <div class="b-amt">${fmt(v.amt)}</div>
+        <div class="b-sub">${v.count} UPI transaction${v.count!==1?'s':''}</div>
+      </div>`).join('');
+  } else {
+    bankEl.innerHTML = '<div class="empty" style="padding:16px"><i class="ti ti-building-bank"></i>No UPI transactions with bank selected yet</div>';
+  }
+
+  // Investment sector summary on dashboard
+  const secTotals = {};
+  txns.filter(t=>t.type==='investment').forEach(t=>{
+    const s = t.invest_sector||'Other';
+    secTotals[s]=(secTotals[s]||0)+t.amount;
+  });
+  const invDashEl = document.getElementById('investSummaryDash');
+  if(Object.keys(secTotals).length){
+    invDashEl.innerHTML = Object.entries(secTotals).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+      <div class="invest-sector-card">
+        <div class="is-name">${k}</div>
+        <div class="is-amt">${fmt(v)}</div>
+      </div>`).join('');
+  } else {
+    invDashEl.innerHTML = '<div class="empty" style="padding:16px"><i class="ti ti-chart-candle"></i>No investments recorded yet</div>';
+  }
+
   const recent = [...txns].sort((a,b)=>b.timestamp-a.timestamp).slice(0,5);
   document.getElementById('recentTxns').innerHTML = recent.length
     ? recent.map(t=>txnHTML(t)).join('')
@@ -565,16 +728,22 @@ function txnHTML(t){
   const u = state.users.find(u=>u.id===t.user) || {name:'?',color:'#888'};
   const ccBadge = t.payment_mode==='Credit Card'
     ? `<span class="cc-badge"><i class="ti ti-credit-card"></i>${t.credit_card||'Credit Card'}</span>` : '';
+  const bankBadge = t.payment_mode==='UPI' && t.upi_bank
+    ? `<span class="bank-badge"><i class="ti ti-building-bank"></i>${t.upi_bank}</span>` : '';
+  const investBadge = t.type==='investment' && t.invest_sector
+    ? `<span class="invest-badge"><i class="ti ti-chart-candle"></i>${t.invest_sector}</span>` : '';
   const userBadge = state.users.length > 1
     ? `<span class="user-badge">${u.name}</span>` : '';
+  const typeIcon = t.type==='income' ? 'arrow-down-left' : t.type==='investment' ? 'chart-candle' : 'arrow-up-right';
+  const amtPrefix = t.type==='income' ? '+' : t.type==='investment' ? '▼' : '-';
   return `<div class="txn-item">
-    <div class="txn-type-pill ${t.type}"><i class="ti ti-${t.type==='income'?'arrow-down-left':'arrow-up-right'}"></i></div>
+    <div class="txn-type-pill ${t.type}"><i class="ti ti-${typeIcon}"></i></div>
     <div class="txn-info">
-      <div class="txn-desc">${t.description||t.category} ${ccBadge} ${userBadge}</div>
+      <div class="txn-desc">${t.description||t.category} ${ccBadge}${bankBadge}${investBadge} ${userBadge}</div>
       <div class="txn-meta">${t.date} &middot; ${t.category}${t.source?' &middot; '+t.source:''} &middot; ${t.payment_mode}</div>
     </div>
     <div class="txn-right">
-      <div class="txn-amount ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
+      <div class="txn-amount ${t.type}">${amtPrefix}${fmt(t.amount)}</div>
       <button class="txn-del" onclick="deleteTxn('${t.id}')" title="Delete"><i class="ti ti-trash"></i></button>
     </div>
   </div>`;
@@ -642,10 +811,39 @@ function renderUserSettings(){
   document.getElementById('cfg-script-url').value = cfg.scriptUrl || '';
 }
 
+function renderInvestments(){
+  const txns = state.transactions.filter(t=>t.type==='investment'&&t.user===state.activeUser);
+  const total = txns.reduce((s,t)=>s+t.amount,0);
+  document.getElementById('investTotal').textContent = fmt(total);
+  document.getElementById('investCount').textContent = `${txns.length} investment transaction${txns.length!==1?'s':''}`;
+
+  const bySector = {};
+  txns.forEach(t=>{
+    const s = t.invest_sector||'Other';
+    bySector[s] = bySector[s]||{amt:0,count:0,platforms:new Set()};
+    bySector[s].amt += t.amount;
+    bySector[s].count++;
+    if(t.invest_platform) bySector[s].platforms.add(t.invest_platform);
+  });
+  document.getElementById('investBySector').innerHTML = Object.keys(bySector).length
+    ? Object.entries(bySector).sort((a,b)=>b[1].amt-a[1].amt).map(([k,v])=>`
+        <div class="invest-sector-card">
+          <div class="is-name">${k}</div>
+          <div class="is-amt">${fmt(v.amt)}</div>
+          <div class="is-sub">${v.count} txn${v.count!==1?'s':''}${v.platforms.size?' &middot; '+[...v.platforms].join(', '):''}</div>
+        </div>`).join('')
+    : '';
+
+  document.getElementById('investTxns').innerHTML = txns.length
+    ? [...txns].sort((a,b)=>b.timestamp-a.timestamp).map(t=>txnHTML(t)).join('')
+    : '<div class="empty"><i class="ti ti-chart-candle"></i>No investment transactions yet</div>';
+}
+
 function renderAll(){
   renderUserBar();
   renderDashboard();
   renderTransactions();
+  renderInvestments();
   renderReconcile();
   renderUserSettings();
 }
@@ -656,6 +854,7 @@ function showPage(id, btn){
   document.getElementById('page-'+id).classList.add('active');
   if(btn) btn.classList.add('active');
   if(id==='transactions') renderTransactions();
+  if(id==='investments') renderInvestments();
   if(id==='reconcile') renderReconcile();
   if(id==='settings') renderUserSettings();
 }
@@ -663,13 +862,16 @@ function showPage(id, btn){
 function switchAddTab(tab){
   document.getElementById('add-expense-form').style.display = tab==='expense'?'block':'none';
   document.getElementById('add-income-form').style.display = tab==='income'?'block':'none';
+  document.getElementById('add-investment-form').style.display = tab==='investment'?'block':'none';
   document.getElementById('tab-exp').classList.toggle('active', tab==='expense');
   document.getElementById('tab-inc').classList.toggle('active', tab==='income');
+  document.getElementById('tab-inv').classList.toggle('active', tab==='investment');
 }
 
 function toggleCCPanel(){
   const mode = document.getElementById('exp-mode').value;
   document.getElementById('cc-panel').style.display = mode==='Credit Card'?'block':'none';
+  document.getElementById('upi-panel').style.display = mode==='UPI'?'block':'none';
 }
 
 function addTransaction(type){
@@ -677,14 +879,17 @@ function addTransaction(type){
     const amount = parseFloat(document.getElementById('exp-amount').value);
     const cat = document.getElementById('exp-cat').value;
     if(!amount || !cat){ showToast('Please fill in amount and category'); return; }
+    const mode = document.getElementById('exp-mode').value;
     const t = {
       id: uid(), type: 'expense',
       category: cat,
       source: document.getElementById('exp-source').value,
       description: document.getElementById('exp-desc').value,
       amount: amount,
-      payment_mode: document.getElementById('exp-mode').value,
-      credit_card: document.getElementById('exp-mode').value==='Credit Card' ? document.getElementById('exp-cc-card').value : '',
+      payment_mode: mode,
+      credit_card: mode==='Credit Card' ? document.getElementById('exp-cc-card').value : '',
+      upi_bank: mode==='UPI' ? document.getElementById('exp-upi-bank').value : '',
+      invest_sector: '', invest_platform: '',
       user: state.activeUser,
       notes: document.getElementById('exp-notes').value,
       date: document.getElementById('exp-date').value || new Date().toISOString().split('T')[0],
@@ -694,9 +899,11 @@ function addTransaction(type){
     saveState(); pushToSheet(t);
     ['exp-amount','exp-desc','exp-source','exp-notes'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('exp-cat').value='';
+    document.getElementById('exp-upi-bank').value='';
     document.getElementById('cc-panel').style.display='none';
+    document.getElementById('upi-panel').style.display='none';
     showToast('Expense added successfully!');
-  } else {
+  } else if(type==='income'){
     const amount = parseFloat(document.getElementById('inc-amount').value);
     const cat = document.getElementById('inc-cat').value;
     if(!amount || !cat){ showToast('Please fill in amount and category'); return; }
@@ -707,7 +914,7 @@ function addTransaction(type){
       description: document.getElementById('inc-desc').value,
       amount: amount,
       payment_mode: document.getElementById('inc-mode').value,
-      credit_card: '',
+      credit_card: '', upi_bank: '', invest_sector: '', invest_platform: '',
       user: state.activeUser,
       notes: document.getElementById('inc-notes').value,
       date: document.getElementById('inc-date').value || new Date().toISOString().split('T')[0],
@@ -718,6 +925,32 @@ function addTransaction(type){
     ['inc-amount','inc-desc','inc-source','inc-notes'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('inc-cat').value='';
     showToast('Income added successfully!');
+  } else if(type==='investment'){
+    const amount = parseFloat(document.getElementById('inv-amount').value);
+    const sector = document.getElementById('inv-sector').value;
+    if(!amount || !sector){ showToast('Please fill in amount and investment sector'); return; }
+    const t = {
+      id: uid(), type: 'investment',
+      category: 'Investment',
+      source: document.getElementById('inv-platform').value,
+      description: document.getElementById('inv-desc').value,
+      amount: amount,
+      payment_mode: 'Bank Transfer',
+      credit_card: '',
+      upi_bank: document.getElementById('inv-bank').value,
+      invest_sector: sector,
+      invest_platform: document.getElementById('inv-platform').value,
+      user: state.activeUser,
+      notes: document.getElementById('inv-notes').value,
+      date: document.getElementById('inv-date').value || new Date().toISOString().split('T')[0],
+      timestamp: Date.now()
+    };
+    state.transactions.push(t);
+    saveState(); pushToSheet(t);
+    ['inv-amount','inv-desc','inv-platform','inv-notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('inv-sector').value='';
+    document.getElementById('inv-bank').value='';
+    showToast('Investment recorded successfully!');
   }
   renderAll();
   showPage('dashboard');
@@ -851,6 +1084,7 @@ function showToast(msg){
 const today = new Date().toISOString().split('T')[0];
 document.getElementById('exp-date').value = today;
 document.getElementById('inc-date').value = today;
+document.getElementById('inv-date').value = today;
 
 loadState();
 renderAll();
