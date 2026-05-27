@@ -419,7 +419,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <label><i class="ti ti-credit-card"></i> Select Credit Card</label>
       <select id="exp-cc-card">
         <option value="">Select card</option>
-       <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
+<option>HSBC Credit Card</option><option>AMEX Credit Card</option>
         <option>ICICI Credit Card</option><option>Axis Credit Card</option>
         <option>HDFC Credit Card</option><option>SBI Card</option><option>Other Credit Card</option>
       </select>
@@ -637,7 +637,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="add-card-row">
       <select id="new-card-name" style="flex:1;min-width:140px">
         <option value="">Select card to add...</option>
-       <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
+        <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
         <option>ICICI Credit Card</option><option>Axis Credit Card</option>
         <option>HDFC Credit Card</option><option>SBI Card</option><option>Other Credit Card</option>
       </select>
@@ -1056,17 +1056,21 @@ function getPastStatementPeriods(stmtDay, monthsBack=12){
   return periods;
 }
 
-function getDueInfo(dueDay, stmtDay){
-  // Due date = dueDay of the month AFTER the current cycle ENDS
-  // e.g. cycle ends Jun 24 → due date = Jul 12
+function getDueInfo(dueDay, stmtDay, cycleEndDateStr){
+  // Due date = dueDay of the month AFTER the given cycle end date
+  // If no cycleEndDateStr provided, uses the current open cycle's end
   const today = new Date();
-  const curPeriod = getStatementPeriod(stmtDay);
-  const cycleEnd  = new Date(curPeriod.end);
-  // Due date is dueDay of the month after cycleEnd
+  let cycleEnd;
+  if(cycleEndDateStr){
+    cycleEnd = new Date(cycleEndDateStr);
+  } else {
+    const curPeriod = getStatementPeriod(stmtDay);
+    cycleEnd = new Date(curPeriod.end);
+  }
   const dueDate = new Date(cycleEnd.getFullYear(), cycleEnd.getMonth()+1, dueDay);
   const diff = Math.ceil((dueDate - today)/(1000*60*60*24));
-  const fmtDue = dueDate.toLocaleString('default',{month:'short',day:'numeric'});
-  if(diff < 0)  return {label:`Overdue by ${Math.abs(diff)}d`, cls:'overdue', diff};
+  const fmtDue = dueDate.toLocaleString('default',{month:'short',day:'numeric',year:'numeric'});
+  if(diff < 0)  return {label:`Overdue by ${Math.abs(diff)}d — was due ${fmtDue}`, cls:'overdue', diff};
   if(diff <= 5) return {label:`Due in ${diff}d (${fmtDue})`, cls:'warn', diff};
   return {label:`Due ${fmtDue}`, cls:'safe', diff};
 }
@@ -1126,7 +1130,9 @@ function renderReconcile(){
       <div class="past-due-section" id="pastdue-${cardId}">
         <div class="past-due-header" onclick="toggleHistory('pastdue-body-${cardId}')">
           <span class="past-due-label">
-            <i class="ti ti-alert-triangle" style="color:var(--expense)"></i>
+            ${unpaidPastPeriods.some(p=>getDueInfo(dueDay,stmtDay,p.end).cls==='overdue')
+              ? `<i class="ti ti-alert-triangle" style="color:var(--expense)"></i>`
+              : `<i class="ti ti-clock" style="color:var(--invest)"></i>`}
             ${unpaidPastPeriods.length} Unpaid Past Cycle${unpaidPastPeriods.length>1?'s':''}
           </span>
           <span class="past-due-total">${fmt(unpaidPastPeriods.reduce((s,p)=>{
@@ -1136,17 +1142,18 @@ function renderReconcile(){
         </div>
         <div id="pastdue-body-${cardId}" style="display:none">
           ${unpaidPastPeriods.map(p=>{
-            const pTxns  = ccTxns.filter(t=>t.credit_card===cardName && t.date>=p.start && t.date<=p.end);
-            const pTotal = pTxns.reduce((s,t)=>s+t.amount,0);
+            const pTxns   = ccTxns.filter(t=>t.credit_card===cardName && t.date>=p.start && t.date<=p.end);
+            const pTotal  = pTxns.reduce((s,t)=>s+t.amount,0);
+            const pDueInfo = getDueInfo(dueDay, stmtDay, p.end); // each cycle's own due date
             return `
             <div class="past-cycle-item">
               <div class="past-cycle-header">
                 <div class="past-cycle-info">
-                  <span class="due-badge overdue" style="font-size:10px"><i class="ti ti-alert-circle"></i> Overdue</span>
+                  <span class="due-badge ${pDueInfo.cls}" style="font-size:10px"><i class="ti ti-${pDueInfo.cls==='safe'?'clock':'alert-circle'}"></i> ${pDueInfo.label}</span>
                   <span class="past-cycle-period">${p.label}</span>
                 </div>
                 <div style="display:flex;align-items:center;gap:8px">
-                  <span style="font-size:15px;font-weight:600;color:var(--expense)">${fmt(pTotal)}</span>
+                  <span style="font-size:15px;font-weight:600;color:${pDueInfo.cls==='safe'?'var(--cc)':'var(--expense)'}">${fmt(pTotal)}</span>
                   <button class="pay-btn" style="padding:6px 12px;font-size:12px"
                     onclick="payBill('${cardId}','${cardName}','${p.periodKey}',${pTotal})">
                     <i class="ti ti-credit-card"></i> Settle Now
