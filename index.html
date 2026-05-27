@@ -255,6 +255,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .add-card-row input,.add-card-row select{padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--surface);outline:none}
 .add-card-row input:focus,.add-card-row select:focus{border-color:var(--text)}
 .add-card-row button{padding:8px 14px;background:var(--text);color:#fff;border:none;border-radius:var(--radius-xs);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+/* PAST DUE CYCLES */
+.past-due-section{background:var(--expense-bg);border:1px solid var(--expense-light);border-radius:var(--radius-sm);margin-bottom:14px;overflow:hidden}
+.past-due-header{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none;transition:background 0.15s}
+.past-due-header:hover{background:rgba(153,60,29,0.08)}
+.past-due-label{flex:1;font-size:13px;font-weight:600;color:var(--expense);display:flex;align-items:center;gap:6px}
+.past-due-total{font-size:14px;font-weight:700;color:var(--expense)}
+.past-due-chevron{font-size:14px;color:var(--expense);transition:transform 0.2s}
+.past-cycle-item{padding:12px 14px;border-top:1px solid rgba(153,60,29,0.15);background:rgba(255,255,255,0.6)}
+.past-cycle-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.past-cycle-info{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.past-cycle-period{font-size:12px;color:var(--text2);font-weight:500}
 .trend-month-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
 .trend-month-tab{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2);transition:all 0.15s}
 .trend-month-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
@@ -626,9 +637,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="add-card-row">
       <select id="new-card-name" style="flex:1;min-width:140px">
         <option value="">Select card to add...</option>
-       <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
+        <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
         <option>ICICI Credit Card</option><option>Axis Credit Card</option>
-        <option>HDFC Credit Card</option><option>SBI Card</option><option>Other Credit Card</option>
+        <option>HDFC Credit Card</option><option>SBI Card</option>
+        <option>Other Credit Card</option>
       </select>
       <input type="number" id="new-card-stmt" placeholder="Stmt day" min="1" max="31" style="width:90px">
       <input type="number" id="new-card-due" placeholder="Due day" min="1" max="31" style="width:90px">
@@ -1002,29 +1014,51 @@ function renderTransactions(){
 }
 
 function getStatementPeriod(stmtDay){
-  // Returns {start, end, periodKey, label} for the current billing period
   const today = new Date();
   const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();
   let start, end;
   if(d >= stmtDay){
-    // Period started this month on stmtDay, ends next month on stmtDay-1
     start = new Date(y, m, stmtDay);
     end   = new Date(y, m+1, stmtDay-1);
   } else {
-    // Period started last month on stmtDay
     start = new Date(y, m-1, stmtDay);
     end   = new Date(y, m, stmtDay-1);
   }
   const fmtDate = dt => dt.toISOString().split('T')[0];
-  const periodKey = fmtDate(start).slice(0,7); // YYYY-MM
+  const periodKey = fmtDate(start).slice(0,7);
   const label = `${start.toLocaleString('default',{month:'short',day:'numeric'})} – ${end.toLocaleString('default',{month:'short',day:'numeric',year:'numeric'})}`;
   return {start:fmtDate(start), end:fmtDate(end), periodKey, label};
+}
+
+function getPastStatementPeriods(stmtDay, monthsBack=12){
+  // Returns array of past periods [{start,end,periodKey,label}], oldest first, excluding current
+  const periods = [];
+  for(let i=monthsBack; i>=1; i--){
+    const today = new Date();
+    const refDate = new Date(today.getFullYear(), today.getMonth()-i, today.getDate());
+    const y = refDate.getFullYear(), m = refDate.getMonth(), d = refDate.getDate();
+    let start, end;
+    if(d >= stmtDay){
+      start = new Date(y, m, stmtDay);
+      end   = new Date(y, m+1, stmtDay-1);
+    } else {
+      start = new Date(y, m-1, stmtDay);
+      end   = new Date(y, m, stmtDay-1);
+    }
+    const fmtDate = dt => dt.toISOString().split('T')[0];
+    const periodKey = fmtDate(start).slice(0,7);
+    // Avoid duplicates
+    if(!periods.find(p=>p.periodKey===periodKey)){
+      const label = `${start.toLocaleString('default',{month:'short',day:'numeric'})} – ${end.toLocaleString('default',{month:'short',day:'numeric',year:'numeric'})}`;
+      periods.push({start:fmtDate(start), end:fmtDate(end), periodKey, label});
+    }
+  }
+  return periods;
 }
 
 function getDueInfo(dueDay, stmtDay){
   const today = new Date();
   const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();
-  // Due date is dueDay of the month after statement closes
   let dueDate;
   if(d >= stmtDay){
     dueDate = new Date(y, m+1, dueDay);
@@ -1041,76 +1075,135 @@ function getDueInfo(dueDay, stmtDay){
 function renderReconcile(){
   const uid = state.activeUser;
   const ccTxns = state.transactions.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card'&&t.user===uid);
-
-  // Get unique cards from transactions + configured cards
   const configuredCards = state.ccCards || [];
   const txnCardNames = [...new Set(ccTxns.map(t=>t.credit_card||'Other'))];
-  // Merge: configured cards first, then any from transactions not yet configured
   const allCardNames = [...new Set([...configuredCards.map(c=>c.name), ...txnCardNames])];
-
-  // Total unpaid = sum of all unsettled CC txns
   const paidPeriods = new Set((state.ccPayments||[]).map(p=>`${p.cardId||p.cardName}::${p.periodKey}`));
   let grandTotal = 0;
 
   const cardsHTML = allCardNames.map(cardName=>{
-    const cfg = configuredCards.find(c=>c.name===cardName);
-    const stmtDay = cfg ? cfg.stmtDay : 1;
-    const dueDay  = cfg ? cfg.dueDay  : 20;
-    const period  = getStatementPeriod(stmtDay);
-    const dueInfo = getDueInfo(dueDay, stmtDay);
-    const cardId  = cfg ? cfg.id : cardName;
-    const isPaid  = paidPeriods.has(`${cardId}::${period.periodKey}`);
+    const cfg       = configuredCards.find(c=>c.name===cardName);
+    const stmtDay   = cfg ? cfg.stmtDay : 1;
+    const dueDay    = cfg ? cfg.dueDay  : 20;
+    const cardId    = cfg ? cfg.id : cardName;
+    const curPeriod = getStatementPeriod(stmtDay);
+    const dueInfo   = getDueInfo(dueDay, stmtDay);
+    const isCurPaid = paidPeriods.has(`${cardId}::${curPeriod.periodKey}`);
 
-    // Current period txns
-    const periodTxns = ccTxns.filter(t=>t.credit_card===cardName && t.date>=period.start && t.date<=period.end);
-    const periodTotal = periodTxns.reduce((s,t)=>s+t.amount,0);
-    if(!isPaid) grandTotal += periodTotal;
+    // Current period
+    const curTxns  = ccTxns.filter(t=>t.credit_card===cardName && t.date>=curPeriod.start && t.date<=curPeriod.end);
+    const curTotal = curTxns.reduce((s,t)=>s+t.amount,0);
+    if(!isCurPaid) grandTotal += curTotal;
 
-    // Payment history for this card
-    const cardPayments = (state.ccPayments||[]).filter(p=>(p.cardId===cardId||p.cardName===cardName) && p.periodKey!==period.periodKey);
+    // Past periods — find unpaid ones that have transactions
+    const pastPeriods = getPastStatementPeriods(stmtDay, 12);
+    const unpaidPastPeriods = pastPeriods.filter(p=>{
+      const paid = paidPeriods.has(`${cardId}::${p.periodKey}`);
+      const txns = ccTxns.filter(t=>t.credit_card===cardName && t.date>=p.start && t.date<=p.end);
+      return !paid && txns.length > 0;
+    });
+    unpaidPastPeriods.forEach(p=>{
+      const total = ccTxns.filter(t=>t.credit_card===cardName && t.date>=p.start && t.date<=p.end).reduce((s,t)=>s+t.amount,0);
+      grandTotal += total;
+    });
+
+    // Paid history (past paid cycles)
+    const paidHistory = (state.ccPayments||[]).filter(p=>(p.cardId===cardId||p.cardName===cardName));
+
+    // Past paid cycles HTML (toggle)
+    const paidHistHTML = paidHistory.length ? `
+      <div id="hist-${cardId}" style="display:none;margin-top:4px">
+        <div class="stmt-period-label" style="margin-top:8px">Payment history</div>
+        ${[...paidHistory].sort((a,b)=>b.paidOn.localeCompare(a.paidOn)).map(p=>`
+          <div class="paid-cycle-item">
+            <span class="pci-period">${p.periodKey}</span>
+            <span class="pci-amt">${fmt(p.amount)}</span>
+            <span class="pci-date">Paid ${p.paidOn}</span>
+          </div>`).join('')}
+      </div>` : '';
+
+    // Unpaid past cycles HTML
+    const unpaidPastHTML = unpaidPastPeriods.length ? `
+      <div class="past-due-section" id="pastdue-${cardId}">
+        <div class="past-due-header" onclick="toggleHistory('pastdue-body-${cardId}')">
+          <span class="past-due-label">
+            <i class="ti ti-alert-triangle" style="color:var(--expense)"></i>
+            ${unpaidPastPeriods.length} Unpaid Past Cycle${unpaidPastPeriods.length>1?'s':''}
+          </span>
+          <span class="past-due-total">${fmt(unpaidPastPeriods.reduce((s,p)=>{
+            return s + ccTxns.filter(t=>t.credit_card===cardName&&t.date>=p.start&&t.date<=p.end).reduce((ss,t)=>ss+t.amount,0);
+          },0))}</span>
+          <i class="ti ti-chevron-down past-due-chevron" id="chev-${cardId}"></i>
+        </div>
+        <div id="pastdue-body-${cardId}" style="display:none">
+          ${unpaidPastPeriods.map(p=>{
+            const pTxns  = ccTxns.filter(t=>t.credit_card===cardName && t.date>=p.start && t.date<=p.end);
+            const pTotal = pTxns.reduce((s,t)=>s+t.amount,0);
+            return `
+            <div class="past-cycle-item">
+              <div class="past-cycle-header">
+                <div class="past-cycle-info">
+                  <span class="due-badge overdue" style="font-size:10px"><i class="ti ti-alert-circle"></i> Overdue</span>
+                  <span class="past-cycle-period">${p.label}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-size:15px;font-weight:600;color:var(--expense)">${fmt(pTotal)}</span>
+                  <button class="pay-btn" style="padding:6px 12px;font-size:12px"
+                    onclick="payBill('${cardId}','${cardName}','${p.periodKey}',${pTotal})">
+                    <i class="ti ti-credit-card"></i> Settle Now
+                  </button>
+                </div>
+              </div>
+              <div class="txn-list" style="margin-top:8px">
+                ${pTxns.sort((a,b)=>b.date.localeCompare(a.date)).map(t=>txnHTML(t)).join('')}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>` : '';
 
     return `
     <div class="cc-statement-card">
       <div class="cc-stmt-header">
         <div class="cc-stmt-header-left">
-          <div class="cc-stmt-icon"><i class="ti ti-credit-card"></i></div>
+          <div class="cc-stmt-icon"${unpaidPastPeriods.length?' style="background:var(--expense-bg);color:var(--expense)"':''}>
+            <i class="ti ti-credit-card"></i>
+          </div>
           <div>
-            <div class="cc-stmt-name">${cardName}</div>
-            <div class="cc-stmt-cycle">Statement: ${cfg?`${cfg.stmtDay}th of month`:'Not configured'} · ${period.label}</div>
+            <div class="cc-stmt-name">${cardName}
+              ${unpaidPastPeriods.length?`<span class="due-badge overdue" style="margin-left:6px;font-size:10px">${unpaidPastPeriods.length} overdue</span>`:''}
+            </div>
+            <div class="cc-stmt-cycle">Stmt: ${cfg?`${cfg.stmtDay}th`:'?'} · Due: ${cfg?`${cfg.dueDay}th`:'?'} · ${curPeriod.label}</div>
           </div>
         </div>
         <div class="cc-stmt-header-right">
-          <div class="cc-stmt-amount" style="color:${isPaid?'var(--income)':'var(--cc)'}">${fmt(periodTotal)}</div>
-          ${isPaid
+          <div class="cc-stmt-amount" style="color:${isCurPaid?'var(--income)':'var(--cc)'}">${fmt(curTotal)}</div>
+          ${isCurPaid
             ? `<span class="due-badge paid"><i class="ti ti-check"></i> Paid this cycle</span>`
             : `<span class="due-badge ${dueInfo.cls}"><i class="ti ti-clock"></i> ${dueInfo.label}</span>`}
         </div>
       </div>
       <div class="cc-stmt-body">
-        <div class="cc-stmt-actions">
-          <button class="pay-btn" onclick="payBill('${cardId}','${cardName}','${period.periodKey}',${periodTotal})"
-            ${isPaid||periodTotal===0?'disabled':''}>
-            <i class="ti ti-${isPaid?'check':'credit-card'}"></i>
-            ${isPaid?'Bill Paid':'Pay Bill — '+fmt(periodTotal)}
+
+        ${unpaidPastHTML}
+
+        <div class="cc-stmt-actions" style="margin-top:${unpaidPastPeriods.length?'12px':'0'}">
+          <button class="pay-btn" onclick="payBill('${cardId}','${cardName}','${curPeriod.periodKey}',${curTotal})"
+            ${isCurPaid||curTotal===0?'disabled':''}>
+            <i class="ti ti-${isCurPaid?'check':'credit-card'}"></i>
+            ${isCurPaid?'Current Bill Paid':'Pay Current Bill — '+fmt(curTotal)}
           </button>
-          ${cardPayments.length?`<button class="history-btn" onclick="toggleHistory('hist-${cardId}')"><i class="ti ti-history"></i> History (${cardPayments.length})</button>`:''}
+          ${paidHistory.length?`<button class="history-btn" onclick="toggleHistory('hist-${cardId}')"><i class="ti ti-history"></i> History (${paidHistory.length})</button>`:''}
         </div>
-        <div class="stmt-period-label">Current period transactions (${periodTxns.length})</div>
+
+        <div class="stmt-period-label">Current period transactions (${curTxns.length})</div>
         <div class="txn-list" style="margin-bottom:8px">
-          ${periodTxns.length
-            ? [...periodTxns].sort((a,b)=>b.date.localeCompare(a.date)).map(t=>txnHTML(t)).join('')
+          ${curTxns.length
+            ? [...curTxns].sort((a,b)=>b.date.localeCompare(a.date)).map(t=>txnHTML(t)).join('')
             : `<div class="empty" style="padding:12px"><i class="ti ti-receipt-off"></i>No transactions this period</div>`}
         </div>
-        ${cardPayments.length?`
-        <div id="hist-${cardId}" style="display:none">
-          <div class="stmt-period-label" style="margin-top:12px">Payment history</div>
-          ${cardPayments.sort((a,b)=>b.paidOn.localeCompare(a.paidOn)).map(p=>`
-            <div class="paid-cycle-item">
-              <span class="pci-period">${p.periodKey}</span>
-              <span class="pci-amt">₹${Number(p.amount).toLocaleString('en-IN')}</span>
-              <span class="pci-date">Paid ${p.paidOn}</span>
-            </div>`).join('')}
-        </div>`:''}
+
+        ${paidHistHTML}
       </div>
     </div>`;
   }).join('');
@@ -1120,12 +1213,27 @@ function renderReconcile(){
     : `<div class="empty" style="padding:40px"><i class="ti ti-credit-card-off"></i>No credit card transactions found.<br>Add cards in Settings → Credit Card Billing Cycles.</div>`;
 
   document.getElementById('ccTotal').textContent = fmt(grandTotal);
-  document.getElementById('ccCount').textContent = `${allCardNames.length} card${allCardNames.length!==1?'s':''} · unpaid current period`;
+  const totalOverdue = allCardNames.reduce((s,cardName)=>{
+    const cfg = configuredCards.find(c=>c.name===cardName);
+    const stmtDay = cfg?cfg.stmtDay:1;
+    const cardId = cfg?cfg.id:cardName;
+    return s + getPastStatementPeriods(stmtDay,12).filter(p=>{
+      return !paidPeriods.has(`${cardId}::${p.periodKey}`) &&
+             ccTxns.filter(t=>t.credit_card===cardName&&t.date>=p.start&&t.date<=p.end).length>0;
+    }).length;
+  },0);
+  document.getElementById('ccCount').textContent =
+    `${allCardNames.length} card${allCardNames.length!==1?'s':''} · ${totalOverdue>0?`⚠️ ${totalOverdue} overdue cycle${totalOverdue>1?'s':''} · `:''}all unpaid included`;
 }
 
 function toggleHistory(id){
   const el = document.getElementById(id);
-  if(el) el.style.display = el.style.display==='none'?'block':'none';
+  if(!el) return;
+  const isHidden = el.style.display==='none';
+  el.style.display = isHidden?'block':'none';
+  // Rotate chevron if present
+  const chev = document.getElementById('chev-'+id.replace('pastdue-body-',''));
+  if(chev) chev.style.transform = isHidden?'rotate(180deg)':'';
 }
 
 function payBill(cardId, cardName, periodKey, amount){
