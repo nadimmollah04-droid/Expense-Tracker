@@ -419,7 +419,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <label><i class="ti ti-credit-card"></i> Select Credit Card</label>
       <select id="exp-cc-card">
         <option value="">Select card</option>
-        <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
+       <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
         <option>ICICI Credit Card</option><option>Axis Credit Card</option>
         <option>HDFC Credit Card</option><option>SBI Card</option><option>Other Credit Card</option>
       </select>
@@ -637,10 +637,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="add-card-row">
       <select id="new-card-name" style="flex:1;min-width:140px">
         <option value="">Select card to add...</option>
-        <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
+       <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
         <option>ICICI Credit Card</option><option>Axis Credit Card</option>
-        <option>HDFC Credit Card</option><option>SBI Card</option>
-        <option>Other Credit Card</option>
+        <option>HDFC Credit Card</option><option>SBI Card</option><option>Other Credit Card</option>
       </select>
       <input type="number" id="new-card-stmt" placeholder="Stmt day" min="1" max="31" style="width:90px">
       <input type="number" id="new-card-due" placeholder="Due day" min="1" max="31" style="width:90px">
@@ -1013,58 +1012,58 @@ function renderTransactions(){
   document.getElementById('filter-cat').innerHTML = '<option value="">All categories</option>' + cats.map(c=>`<option value="${c}" ${c===curC?'selected':''}>${c}</option>`).join('');
 }
 
-function getStatementPeriod(stmtDay){
-  const today = new Date();
-  const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();
-  let start, end;
-  if(d >= stmtDay){
-    start = new Date(y, m, stmtDay);
-    end   = new Date(y, m+1, stmtDay-1);
-  } else {
-    start = new Date(y, m-1, stmtDay);
-    end   = new Date(y, m, stmtDay-1);
-  }
+function buildPeriod(startYear, startMonth, stmtDay){
+  // Period: startYear/startMonth/stmtDay  →  one month later, stmtDay-1
+  const start = new Date(startYear, startMonth, stmtDay);
+  const end   = new Date(startYear, startMonth+1, stmtDay-1);
   const fmtDate = dt => dt.toISOString().split('T')[0];
-  const periodKey = fmtDate(start).slice(0,7);
+  const periodKey = fmtDate(start).slice(0,7); // YYYY-MM of start
   const label = `${start.toLocaleString('default',{month:'short',day:'numeric'})} – ${end.toLocaleString('default',{month:'short',day:'numeric',year:'numeric'})}`;
-  return {start:fmtDate(start), end:fmtDate(end), periodKey, label};
+  return {start:fmtDate(start), end:fmtDate(end), periodKey, label, startYear, startMonth};
+}
+
+function getStatementPeriod(stmtDay){
+  // Current OPEN cycle = the one that started on the most recent stmtDay
+  // e.g. stmtDay=25, today=May 27 → cycle started May 25, ends Jun 24
+  //      stmtDay=25, today=May 20 → cycle started Apr 25, ends May 24
+  const today = new Date();
+  const y = today.getFullYear(), mo = today.getMonth(), d = today.getDate();
+  let startYear, startMonth;
+  if(d >= stmtDay){
+    // Statement day has passed this month → current cycle started this month
+    startYear = y; startMonth = mo;
+  } else {
+    // Statement day hasn't come yet → current cycle started last month
+    startYear = y; startMonth = mo - 1;
+    if(startMonth < 0){ startMonth = 11; startYear--; }
+  }
+  return buildPeriod(startYear, startMonth, stmtDay);
 }
 
 function getPastStatementPeriods(stmtDay, monthsBack=12){
-  // Returns array of past periods [{start,end,periodKey,label}], oldest first, excluding current
+  // Returns closed past periods oldest→newest, NOT including current open cycle
+  const cur = getStatementPeriod(stmtDay);
   const periods = [];
   for(let i=monthsBack; i>=1; i--){
-    const today = new Date();
-    const refDate = new Date(today.getFullYear(), today.getMonth()-i, today.getDate());
-    const y = refDate.getFullYear(), m = refDate.getMonth(), d = refDate.getDate();
-    let start, end;
-    if(d >= stmtDay){
-      start = new Date(y, m, stmtDay);
-      end   = new Date(y, m+1, stmtDay-1);
-    } else {
-      start = new Date(y, m-1, stmtDay);
-      end   = new Date(y, m, stmtDay-1);
-    }
-    const fmtDate = dt => dt.toISOString().split('T')[0];
-    const periodKey = fmtDate(start).slice(0,7);
-    // Avoid duplicates
-    if(!periods.find(p=>p.periodKey===periodKey)){
-      const label = `${start.toLocaleString('default',{month:'short',day:'numeric'})} – ${end.toLocaleString('default',{month:'short',day:'numeric',year:'numeric'})}`;
-      periods.push({start:fmtDate(start), end:fmtDate(end), periodKey, label});
+    let startMonth = cur.startMonth - i;
+    let startYear  = cur.startYear;
+    while(startMonth < 0){ startMonth += 12; startYear--; }
+    const p = buildPeriod(startYear, startMonth, stmtDay);
+    if(!periods.find(x=>x.periodKey===p.periodKey)){
+      periods.push(p);
     }
   }
   return periods;
 }
 
 function getDueInfo(dueDay, stmtDay){
+  // Due date = dueDay of the month AFTER the current cycle ENDS
+  // e.g. cycle ends Jun 24 → due date = Jul 12
   const today = new Date();
-  const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();
-  let dueDate;
-  if(d >= stmtDay){
-    dueDate = new Date(y, m+1, dueDay);
-  } else {
-    dueDate = new Date(y, m, dueDay);
-  }
+  const curPeriod = getStatementPeriod(stmtDay);
+  const cycleEnd  = new Date(curPeriod.end);
+  // Due date is dueDay of the month after cycleEnd
+  const dueDate = new Date(cycleEnd.getFullYear(), cycleEnd.getMonth()+1, dueDay);
   const diff = Math.ceil((dueDate - today)/(1000*60*60*24));
   const fmtDue = dueDate.toLocaleString('default',{month:'short',day:'numeric'});
   if(diff < 0)  return {label:`Overdue by ${Math.abs(diff)}d`, cls:'overdue', diff};
