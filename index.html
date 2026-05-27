@@ -218,7 +218,43 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--text);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:300;opacity:0;transition:all 0.25s;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* TRENDS */
+/* CC RECONCILE - STATEMENT BASED */
+.cc-statement-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0;margin-bottom:14px;box-shadow:var(--shadow);overflow:hidden}
+.cc-stmt-header{padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.cc-stmt-header-left{display:flex;align-items:center;gap:12px}
+.cc-stmt-icon{width:40px;height:40px;border-radius:var(--radius-xs);background:var(--cc-bg);color:var(--cc);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cc-stmt-name{font-size:15px;font-weight:600}
+.cc-stmt-cycle{font-size:12px;color:var(--text2);margin-top:2px}
+.cc-stmt-header-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.cc-stmt-amount{font-size:24px;font-weight:600;color:var(--cc)}
+.due-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px}
+.due-badge.safe{background:#e1f5ee;color:#0f6e56}
+.due-badge.warn{background:#FEF3E7;color:#7A4F1E}
+.due-badge.overdue{background:var(--expense-bg);color:var(--expense)}
+.due-badge.paid{background:var(--surface2);color:var(--text3)}
+.cc-stmt-body{padding:14px 18px}
+.cc-stmt-actions{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.pay-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--cc);color:#fff;border:none;border-radius:var(--radius-xs);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.15s}
+.pay-btn:hover{opacity:0.85}
+.pay-btn:disabled{background:var(--surface2);color:var(--text3);cursor:default}
+.history-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:none;color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s}
+.history-btn:hover{background:var(--surface2)}
+.stmt-period-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;color:var(--text3);margin-bottom:8px}
+.paid-cycle-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface2);border-radius:var(--radius-xs);margin-bottom:6px;font-size:13px}
+.paid-cycle-item .pci-period{color:var(--text2);font-weight:500}
+.paid-cycle-item .pci-amt{font-weight:600;color:var(--income)}
+.paid-cycle-item .pci-date{font-size:11px;color:var(--text3)}
+.cc-config-grid{display:flex;flex-direction:column;gap:10px}
+.cc-config-row{display:grid;grid-template-columns:1fr 100px 100px 36px;align-items:center;gap:8px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius-xs)}
+.cc-config-row input[type=number]{padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--surface);outline:none;text-align:center;width:100%}
+.cc-config-row input:focus{border-color:var(--text)}
+.cc-config-name{font-size:13px;font-weight:500}
+.cc-config-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:4px;border-radius:4px;transition:all 0.15s}
+.cc-config-del:hover{color:var(--expense);background:var(--expense-bg)}
+.add-card-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.add-card-row input,.add-card-row select{padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--surface);outline:none}
+.add-card-row input:focus,.add-card-row select:focus{border-color:var(--text)}
+.add-card-row button{padding:8px 14px;background:var(--text);color:#fff;border:none;border-radius:var(--radius-xs);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
 .trend-month-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
 .trend-month-tab{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2);transition:all 0.15s}
 .trend-month-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
@@ -372,9 +408,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <label><i class="ti ti-credit-card"></i> Select Credit Card</label>
       <select id="exp-cc-card">
         <option value="">Select card</option>
-        <option>HSBC Credit Card</option><option>AMEX Card</option>
+        <option>HDFC Credit Card</option><option>SBI Credit Card</option>
         <option>ICICI Credit Card</option><option>Axis Credit Card</option>
-        <option>HDFC Credit Card</option><option>SBI Credit Card</option><option>Other Credit Card</option>
+        <option>Kotak Credit Card</option><option>AMEX Card</option><option>Other Credit Card</option>
       </select>
     </div>
     <button class="submit-btn btn-expense" onclick="addTransaction('expense')"><i class="ti ti-plus"></i> Add Expense</button>
@@ -535,16 +571,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <!-- CC RECONCILE -->
 <div id="page-reconcile" class="page">
-  <div class="recon-hero">
-    <h3><i class="ti ti-credit-card"></i> Total Credit Card Outstanding</h3>
+  <div class="recon-hero" style="margin-bottom:16px">
+    <h3><i class="ti ti-credit-card"></i> Total Unpaid CC Balance</h3>
     <div class="recon-total" id="ccTotal">₹0</div>
-    <div class="recon-sub" id="ccCount">0 transactions</div>
+    <div class="recon-sub" id="ccCount">Across all cards · current statement period</div>
   </div>
-  <div class="cc-cards-grid" id="ccByCard"></div>
-  <div class="section-card">
-    <h3><i class="ti ti-list"></i> Credit Card Transactions</h3>
-    <div class="txn-list" id="ccTxns"></div>
-  </div>
+  <div id="ccCardStatements"></div>
 </div>
 
 <!-- SETTINGS -->
@@ -579,6 +611,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="settings-info"><i class="ti ti-info-circle"></i> Set the starting balance for each user. This is the amount in hand before any transactions were recorded. It carries forward automatically each month.</div>
     <div class="ob-grid" id="obGrid"></div>
     <button onclick="saveOpeningBalances()" style="padding:8px 16px;background:var(--text);color:#fff;border:none;border-radius:var(--radius-xs);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif"><i class="ti ti-check"></i> Save Balances</button>
+  </div>
+
+  <div class="section-card">
+    <h3><i class="ti ti-credit-card"></i> Credit Card Billing Cycles</h3>
+    <div class="settings-info"><i class="ti ti-info-circle"></i> Set statement date and due date for each card. The CC Reconcile page will use these to group transactions and alert when bills are due.</div>
+    <div style="display:grid;grid-template-columns:1fr 100px 100px 36px;gap:8px;margin-bottom:8px;padding:0 12px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text3);letter-spacing:0.4px">Card Name</div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text3);letter-spacing:0.4px;text-align:center">Stmt Date</div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text3);letter-spacing:0.4px;text-align:center">Due Date</div>
+      <div></div>
+    </div>
+    <div class="cc-config-grid" id="ccConfigGrid"></div>
+    <div class="add-card-row">
+      <select id="new-card-name" style="flex:1;min-width:140px">
+        <option value="">Select card to add...</option>
+        <option>HDFC Credit Card</option><option>SBI Credit Card</option>
+        <option>ICICI Credit Card</option><option>Axis Credit Card</option>
+        <option>Kotak Credit Card</option><option>AMEX Card</option>
+        <option>Other Credit Card</option>
+      </select>
+      <input type="number" id="new-card-stmt" placeholder="Stmt day" min="1" max="31" style="width:90px">
+      <input type="number" id="new-card-due" placeholder="Due day" min="1" max="31" style="width:90px">
+      <button onclick="addCCCard()"><i class="ti ti-plus"></i> Add Card</button>
+    </div>
   </div>
 
   <div class="section-card">
@@ -694,6 +750,8 @@ let state = {
   transactions: [],
   activeUser: 'u1',
   openingBalances: {},
+  ccCards: [],        // [{id, name, stmtDay, dueDay}]
+  ccPayments: [],     // [{id, cardId, periodKey, amount, paidOn}]
   config: {sheetId:'',scriptUrl:''}
 };
 
@@ -944,23 +1002,173 @@ function renderTransactions(){
   document.getElementById('filter-cat').innerHTML = '<option value="">All categories</option>' + cats.map(c=>`<option value="${c}" ${c===curC?'selected':''}>${c}</option>`).join('');
 }
 
+function getStatementPeriod(stmtDay){
+  // Returns {start, end, periodKey, label} for the current billing period
+  const today = new Date();
+  const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();
+  let start, end;
+  if(d >= stmtDay){
+    // Period started this month on stmtDay, ends next month on stmtDay-1
+    start = new Date(y, m, stmtDay);
+    end   = new Date(y, m+1, stmtDay-1);
+  } else {
+    // Period started last month on stmtDay
+    start = new Date(y, m-1, stmtDay);
+    end   = new Date(y, m, stmtDay-1);
+  }
+  const fmtDate = dt => dt.toISOString().split('T')[0];
+  const periodKey = fmtDate(start).slice(0,7); // YYYY-MM
+  const label = `${start.toLocaleString('default',{month:'short',day:'numeric'})} – ${end.toLocaleString('default',{month:'short',day:'numeric',year:'numeric'})}`;
+  return {start:fmtDate(start), end:fmtDate(end), periodKey, label};
+}
+
+function getDueInfo(dueDay, stmtDay){
+  const today = new Date();
+  const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();
+  // Due date is dueDay of the month after statement closes
+  let dueDate;
+  if(d >= stmtDay){
+    dueDate = new Date(y, m+1, dueDay);
+  } else {
+    dueDate = new Date(y, m, dueDay);
+  }
+  const diff = Math.ceil((dueDate - today)/(1000*60*60*24));
+  const fmtDue = dueDate.toLocaleString('default',{month:'short',day:'numeric'});
+  if(diff < 0)  return {label:`Overdue by ${Math.abs(diff)}d`, cls:'overdue', diff};
+  if(diff <= 5) return {label:`Due in ${diff}d (${fmtDue})`, cls:'warn', diff};
+  return {label:`Due ${fmtDue}`, cls:'safe', diff};
+}
+
 function renderReconcile(){
-  const ccTxns = state.transactions.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card'&&t.user===state.activeUser);
-  const total = ccTxns.reduce((s,t)=>s+t.amount,0);
-  document.getElementById('ccTotal').textContent = fmt(total);
-  document.getElementById('ccCount').textContent = `${ccTxns.length} credit card transaction${ccTxns.length!==1?'s':''}`;
+  const uid = state.activeUser;
+  const ccTxns = state.transactions.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card'&&t.user===uid);
 
-  const byCard = {};
-  ccTxns.forEach(t=>{ byCard[t.credit_card||'Other']=(byCard[t.credit_card||'Other']||0)+t.amount; });
-  document.getElementById('ccByCard').innerHTML = Object.entries(byCard).map(([k,v])=>`
-    <div class="cc-card">
-      <div class="cc-card-name"><i class="ti ti-credit-card"></i> ${k}</div>
-      <div class="cc-card-amt">${fmt(v)}</div>
-    </div>`).join('') || '';
+  // Get unique cards from transactions + configured cards
+  const configuredCards = state.ccCards || [];
+  const txnCardNames = [...new Set(ccTxns.map(t=>t.credit_card||'Other'))];
+  // Merge: configured cards first, then any from transactions not yet configured
+  const allCardNames = [...new Set([...configuredCards.map(c=>c.name), ...txnCardNames])];
 
-  document.getElementById('ccTxns').innerHTML = ccTxns.length
-    ? [...ccTxns].sort((a,b)=>b.timestamp-a.timestamp).map(t=>txnHTML(t)).join('')
-    : '<div class="empty"><i class="ti ti-credit-card-off"></i>No credit card transactions</div>';
+  // Total unpaid = sum of all unsettled CC txns
+  const paidPeriods = new Set((state.ccPayments||[]).map(p=>`${p.cardId||p.cardName}::${p.periodKey}`));
+  let grandTotal = 0;
+
+  const cardsHTML = allCardNames.map(cardName=>{
+    const cfg = configuredCards.find(c=>c.name===cardName);
+    const stmtDay = cfg ? cfg.stmtDay : 1;
+    const dueDay  = cfg ? cfg.dueDay  : 20;
+    const period  = getStatementPeriod(stmtDay);
+    const dueInfo = getDueInfo(dueDay, stmtDay);
+    const cardId  = cfg ? cfg.id : cardName;
+    const isPaid  = paidPeriods.has(`${cardId}::${period.periodKey}`);
+
+    // Current period txns
+    const periodTxns = ccTxns.filter(t=>t.credit_card===cardName && t.date>=period.start && t.date<=period.end);
+    const periodTotal = periodTxns.reduce((s,t)=>s+t.amount,0);
+    if(!isPaid) grandTotal += periodTotal;
+
+    // Payment history for this card
+    const cardPayments = (state.ccPayments||[]).filter(p=>(p.cardId===cardId||p.cardName===cardName) && p.periodKey!==period.periodKey);
+
+    return `
+    <div class="cc-statement-card">
+      <div class="cc-stmt-header">
+        <div class="cc-stmt-header-left">
+          <div class="cc-stmt-icon"><i class="ti ti-credit-card"></i></div>
+          <div>
+            <div class="cc-stmt-name">${cardName}</div>
+            <div class="cc-stmt-cycle">Statement: ${cfg?`${cfg.stmtDay}th of month`:'Not configured'} · ${period.label}</div>
+          </div>
+        </div>
+        <div class="cc-stmt-header-right">
+          <div class="cc-stmt-amount" style="color:${isPaid?'var(--income)':'var(--cc)'}">${fmt(periodTotal)}</div>
+          ${isPaid
+            ? `<span class="due-badge paid"><i class="ti ti-check"></i> Paid this cycle</span>`
+            : `<span class="due-badge ${dueInfo.cls}"><i class="ti ti-clock"></i> ${dueInfo.label}</span>`}
+        </div>
+      </div>
+      <div class="cc-stmt-body">
+        <div class="cc-stmt-actions">
+          <button class="pay-btn" onclick="payBill('${cardId}','${cardName}','${period.periodKey}',${periodTotal})"
+            ${isPaid||periodTotal===0?'disabled':''}>
+            <i class="ti ti-${isPaid?'check':'credit-card'}"></i>
+            ${isPaid?'Bill Paid':'Pay Bill — '+fmt(periodTotal)}
+          </button>
+          ${cardPayments.length?`<button class="history-btn" onclick="toggleHistory('hist-${cardId}')"><i class="ti ti-history"></i> History (${cardPayments.length})</button>`:''}
+        </div>
+        <div class="stmt-period-label">Current period transactions (${periodTxns.length})</div>
+        <div class="txn-list" style="margin-bottom:8px">
+          ${periodTxns.length
+            ? [...periodTxns].sort((a,b)=>b.date.localeCompare(a.date)).map(t=>txnHTML(t)).join('')
+            : `<div class="empty" style="padding:12px"><i class="ti ti-receipt-off"></i>No transactions this period</div>`}
+        </div>
+        ${cardPayments.length?`
+        <div id="hist-${cardId}" style="display:none">
+          <div class="stmt-period-label" style="margin-top:12px">Payment history</div>
+          ${cardPayments.sort((a,b)=>b.paidOn.localeCompare(a.paidOn)).map(p=>`
+            <div class="paid-cycle-item">
+              <span class="pci-period">${p.periodKey}</span>
+              <span class="pci-amt">₹${Number(p.amount).toLocaleString('en-IN')}</span>
+              <span class="pci-date">Paid ${p.paidOn}</span>
+            </div>`).join('')}
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('ccCardStatements').innerHTML = allCardNames.length
+    ? cardsHTML
+    : `<div class="empty" style="padding:40px"><i class="ti ti-credit-card-off"></i>No credit card transactions found.<br>Add cards in Settings → Credit Card Billing Cycles.</div>`;
+
+  document.getElementById('ccTotal').textContent = fmt(grandTotal);
+  document.getElementById('ccCount').textContent = `${allCardNames.length} card${allCardNames.length!==1?'s':''} · unpaid current period`;
+}
+
+function toggleHistory(id){
+  const el = document.getElementById(id);
+  if(el) el.style.display = el.style.display==='none'?'block':'none';
+}
+
+function payBill(cardId, cardName, periodKey, amount){
+  if(!confirm(`Mark ₹${Number(amount).toLocaleString('en-IN')} as paid for ${cardName}?`)) return;
+  if(!state.ccPayments) state.ccPayments = [];
+  state.ccPayments.push({
+    id: 'pay'+Date.now(),
+    cardId, cardName, periodKey, amount,
+    paidOn: new Date().toISOString().split('T')[0]
+  });
+  saveState();
+  renderReconcile();
+  renderDashboard();
+  showToast(`${cardName} bill marked as paid!`);
+}
+
+function addCCCard(){
+  const name  = document.getElementById('new-card-name').value;
+  const stmt  = parseInt(document.getElementById('new-card-stmt').value);
+  const due   = parseInt(document.getElementById('new-card-due').value);
+  if(!name || !stmt || !due){ showToast('Please fill in card name, statement date and due date'); return; }
+  if(!state.ccCards) state.ccCards = [];
+  if(state.ccCards.find(c=>c.name===name)){ showToast('Card already configured'); return; }
+  state.ccCards.push({id:'cc'+Date.now(), name, stmtDay:stmt, dueDay:due});
+  document.getElementById('new-card-name').value='';
+  document.getElementById('new-card-stmt').value='';
+  document.getElementById('new-card-due').value='';
+  saveState();
+  renderUserSettings();
+  renderReconcile();
+  showToast('Card added!');
+}
+
+function deleteCCCard(id){
+  if(!confirm('Remove this card configuration?')) return;
+  state.ccCards = (state.ccCards||[]).filter(c=>c.id!==id);
+  saveState(); renderUserSettings(); renderReconcile();
+}
+
+function updateCCCard(id, field, value){
+  const card = (state.ccCards||[]).find(c=>c.id===id);
+  if(card){ card[field]=parseInt(value)||1; saveState(); renderReconcile(); }
 }
 
 
@@ -1408,6 +1616,20 @@ function renderUserSettings(){
       <input class="ob-input" type="number" id="ob-${u.id}" placeholder="₹ 0" value="${ob[u.id]||''}" min="0" step="0.01">
     </div>`;
   }).join('');
+
+  // CC card config grid
+  const cards = state.ccCards || [];
+  document.getElementById('ccConfigGrid').innerHTML = cards.length
+    ? cards.map(c=>`
+        <div class="cc-config-row">
+          <div class="cc-config-name"><i class="ti ti-credit-card" style="color:var(--cc);margin-right:6px"></i>${c.name}</div>
+          <input type="number" value="${c.stmtDay}" min="1" max="31" placeholder="Stmt day"
+            onchange="updateCCCard('${c.id}','stmtDay',this.value)" title="Statement date (day of month)">
+          <input type="number" value="${c.dueDay}" min="1" max="31" placeholder="Due day"
+            onchange="updateCCCard('${c.id}','dueDay',this.value)" title="Payment due date (day of month)">
+          <button class="cc-config-del" onclick="deleteCCCard('${c.id}')"><i class="ti ti-trash"></i></button>
+        </div>`).join('')
+    : `<div style="font-size:13px;color:var(--text3);padding:10px 12px">No cards configured yet. Add one below.</div>`;
 
   // Config fields
   const cfg = state.config || {};
