@@ -173,6 +173,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .setup-steps code{background:var(--surface2);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text)}
 .view-script-btn{margin-top:14px;padding:9px 16px;background:var(--text);color:#fff;border:none;border-radius:var(--radius-xs);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px}
 
+/* RUNNING BALANCE */
+.balance-hero{background:var(--text);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.balance-hero-left h3{font-size:12px;font-weight:600;opacity:0.6;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px}
+.balance-amount{font-size:42px;font-weight:600;letter-spacing:-1.5px;line-height:1}
+.balance-sub{font-size:12px;opacity:0.55;margin-top:6px}
+.balance-hero-right{display:flex;flex-direction:column;gap:8px;min-width:180px}
+.bal-row{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.bal-row-label{font-size:12px;opacity:0.6;font-weight:500}
+.bal-row-val{font-size:13px;font-weight:600}
+.bal-divider{height:1px;background:rgba(255,255,255,0.15);margin:4px 0}
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text3);margin-bottom:10px;margin-top:4px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.alltime-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}
+.alltime-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px}
+.alltime-card .at-label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px}
+.alltime-card .at-val{font-size:17px;font-weight:600}
+.ob-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.ob-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius-xs)}
+.ob-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+.ob-name{flex:1;font-size:13px;font-weight:500}
+.ob-input{width:130px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);text-align:right;outline:none}
+.ob-input:focus{border-color:var(--text)}
+
 /* EMPTY */
 .empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
 .empty i{font-size:32px;display:block;margin-bottom:8px;opacity:0.4}
@@ -195,6 +218,31 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--text);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:300;opacity:0;transition:all 0.25s;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+/* TRENDS */
+.trend-month-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.trend-month-tab{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2);transition:all 0.15s}
+.trend-month-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+.chart-wrap{width:100%;overflow-x:auto}
+.chart-wrap svg{display:block;width:100%;min-width:300px}
+.trend-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);font-weight:500}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.change-chip{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:2px 7px;border-radius:4px}
+.change-chip.up{background:var(--income-bg);color:var(--income)}
+.change-chip.down{background:var(--expense-bg);color:var(--expense)}
+.change-chip.neutral{background:var(--surface2);color:var(--text2)}
+.mom-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.mom-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.mom-card .mc-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px}
+.mom-card .mc-val{font-size:20px;font-weight:600;letter-spacing:-0.3px}
+.mom-card .mc-change{font-size:12px;margin-top:4px;display:flex;align-items:center;gap:4px}
+.cat-trend-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.cat-trend-row:last-child{border-bottom:none}
+.cat-trend-name{font-size:13px;font-weight:500;width:120px;flex-shrink:0}
+.cat-trend-bars{flex:1;display:flex;gap:4px;align-items:flex-end;height:36px}
+.cat-mini-bar{flex:1;border-radius:3px 3px 0 0;min-height:3px;transition:height 0.3s}
+.cat-trend-amt{font-size:12px;color:var(--text2);width:70px;text-align:right;flex-shrink:0}
+
 @media(max-width:600px){
   .content{padding:16px}
   .two-col{grid-template-columns:1fr}
@@ -203,6 +251,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   .cards-row{grid-template-columns:1fr 1fr}
   .topbar{padding:0 16px}
   .topbar h1{font-size:14px}
+  .mom-grid{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
@@ -224,6 +273,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <button class="nav-btn" onclick="showPage('add',this)"><i class="ti ti-plus"></i> Add Entry</button>
   <button class="nav-btn" onclick="showPage('transactions',this)"><i class="ti ti-list"></i> Transactions</button>
   <button class="nav-btn" onclick="showPage('investments',this)"><i class="ti ti-chart-candle"></i> Investments</button>
+  <button class="nav-btn" onclick="showPage('trends',this)"><i class="ti ti-chart-bar"></i> Trends</button>
   <button class="nav-btn" onclick="showPage('reconcile',this)"><i class="ti ti-credit-card"></i> CC Reconcile</button>
   <button class="nav-btn" onclick="showPage('settings',this)"><i class="ti ti-settings"></i> Settings</button>
 </div>
@@ -233,7 +283,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
+
+  <!-- Running Balance Hero -->
+  <div class="balance-hero" id="balanceHero"></div>
+
+  <!-- Current Month -->
+  <div class="section-label"><i class="ti ti-calendar-month"></i> This Month</div>
   <div class="cards-row" id="summaryCards"></div>
+
+  <!-- All-time totals -->
+  <div class="section-label"><i class="ti ti-infinity"></i> All Time</div>
+  <div class="alltime-row" id="alltimeCards"></div>
+
   <div class="two-col">
     <div class="section-card">
       <h3><i class="ti ti-trending-down"></i> Top Expense Categories</h3>
@@ -313,7 +374,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <option value="">Select card</option>
         <option>HDFC Credit Card</option><option>SBI Credit Card</option>
         <option>ICICI Credit Card</option><option>Axis Credit Card</option>
-        <option>HSBC Credit Card</option><option>AMEX Card</option><option>Other Credit Card</option>
+        <option>Kotak Credit Card</option><option>AMEX Card</option><option>Other Credit Card</option>
       </select>
     </div>
     <button class="submit-btn btn-expense" onclick="addTransaction('expense')"><i class="ti ti-plus"></i> Add Expense</button>
@@ -412,6 +473,52 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="txn-list" id="allTxns"></div>
 </div>
 
+<!-- TRENDS -->
+<div id="page-trends" class="page">
+
+  <!-- Month-on-month summary cards -->
+  <div class="mom-grid" id="momCards"></div>
+
+  <!-- Main grouped bar chart: Income vs Expense vs Investment -->
+  <div class="section-card">
+    <h3><i class="ti ti-chart-bar"></i> Income vs Expense vs Investment — Last 3 Months</h3>
+    <div class="chart-wrap" id="barChartWrap"></div>
+    <div class="trend-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#0f6e56"></div>Income</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#993c1d"></div>Expense</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#7A4F1E"></div>Investment</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3C3489"></div>Net Savings</div>
+    </div>
+  </div>
+
+  <!-- Line trend chart for net balance -->
+  <div class="section-card">
+    <h3><i class="ti ti-trending-up"></i> Net Balance Trend</h3>
+    <div class="chart-wrap" id="lineChartWrap"></div>
+  </div>
+
+  <!-- Category breakdown by month -->
+  <div class="two-col">
+    <div class="section-card">
+      <h3><i class="ti ti-trending-down"></i> Expense by Category — Month Comparison</h3>
+      <div id="catTrendList"></div>
+    </div>
+    <div class="section-card">
+      <h3><i class="ti ti-chart-donut"></i> Spending Mix This Month</h3>
+      <div class="chart-wrap" id="donutChartWrap"></div>
+      <div class="trend-legend" id="donutLegend" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <!-- Payment mode breakdown -->
+  <div class="section-card">
+    <h3><i class="ti ti-wallet"></i> Payment Mode Trend</h3>
+    <div class="chart-wrap" id="paymentChartWrap"></div>
+    <div class="trend-legend" id="paymentLegend" style="margin-top:10px"></div>
+  </div>
+
+</div>
+
 <!-- INVESTMENTS -->
 <div id="page-investments" class="page">
   <div class="invest-hero">
@@ -465,6 +572,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <input type="color" id="new-user-color" value="#0f6e56">
       <button onclick="addUser()">Add</button>
     </div>
+  </div>
+
+  <div class="section-card">
+    <h3><i class="ti ti-wallet"></i> Opening Balance per User</h3>
+    <div class="settings-info"><i class="ti ti-info-circle"></i> Set the starting balance for each user. This is the amount in hand before any transactions were recorded. It carries forward automatically each month.</div>
+    <div class="ob-grid" id="obGrid"></div>
+    <button onclick="saveOpeningBalances()" style="padding:8px 16px;background:var(--text);color:#fff;border:none;border-radius:var(--radius-xs);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif"><i class="ti ti-check"></i> Save Balances</button>
   </div>
 
   <div class="section-card">
@@ -579,6 +693,7 @@ let state = {
   users: [{id:'u1',name:'Me',color:'#0f6e56'}],
   transactions: [],
   activeUser: 'u1',
+  openingBalances: {},
   config: {sheetId:'',scriptUrl:''}
 };
 
@@ -631,98 +746,149 @@ function setUser(id){
   renderAll();
 }
 
+function computeRunningBalance(userId){
+  // Opening balance set by user
+  const openingBal = (state.openingBalances && state.openingBalances[userId]) || 0;
+  // All transactions sorted by date ascending
+  const txns = [...state.transactions.filter(t=>t.user===userId)]
+    .sort((a,b)=>a.date.localeCompare(b.date)||a.timestamp-b.timestamp);
+  let balance = openingBal;
+  txns.forEach(t=>{
+    if(t.type==='income') balance += t.amount;
+    else if(t.type==='expense') balance -= t.amount;
+    else if(t.type==='investment') balance -= t.amount;
+  });
+  return balance;
+}
+
+function getMonthKey(offsetMonths=0){
+  const d = new Date();
+  d.setMonth(d.getMonth()+offsetMonths);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
 function renderDashboard(){
-  const txns = state.transactions.filter(t => t.user === state.activeUser);
-  const totalIncome = txns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
-  const totalExpense = txns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
-  const totalInvest = txns.filter(t=>t.type==='investment').reduce((s,t)=>s+t.amount,0);
-  const ccExpense = txns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').reduce((s,t)=>s+t.amount,0);
-  const net = totalIncome - totalExpense - totalInvest;
-  const savingsRate = totalIncome > 0 ? Math.round(((totalIncome-totalExpense)/totalIncome)*100) : 0;
+  const uid = state.activeUser;
+  const allTxns = state.transactions.filter(t=>t.user===uid);
+  const curMonth = getMonthKey(0);
+  const prevMonth = getMonthKey(-1);
+
+  // ── Running Balance Hero ──
+  const runBal = computeRunningBalance(uid);
+  const openingBal = (state.openingBalances && state.openingBalances[uid]) || 0;
+  const allIncome  = allTxns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const allExpense = allTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const allInvest  = allTxns.filter(t=>t.type==='investment').reduce((s,t)=>s+t.amount,0);
+  const balColor = runBal >= 0 ? '#4ADE80' : '#F87171';
+  document.getElementById('balanceHero').innerHTML = `
+    <div class="balance-hero-left">
+      <h3><i class="ti ti-wallet"></i> Running Balance</h3>
+      <div class="balance-amount" style="color:${balColor}">${fmt(runBal)}</div>
+      <div class="balance-sub">Opening balance: ${fmt(openingBal)} · Updated as of today</div>
+    </div>
+    <div class="balance-hero-right">
+      <div class="bal-row"><span class="bal-row-label">+ Total Income</span><span class="bal-row-val" style="color:#4ADE80">${fmt(allIncome)}</span></div>
+      <div class="bal-row"><span class="bal-row-label">− Total Expense</span><span class="bal-row-val" style="color:#F87171">${fmt(allExpense)}</span></div>
+      <div class="bal-row"><span class="bal-row-label">− Invested</span><span class="bal-row-val" style="color:#FCD34D">${fmt(allInvest)}</span></div>
+      <div class="bal-divider"></div>
+      <div class="bal-row"><span class="bal-row-label">= Balance</span><span class="bal-row-val" style="color:${balColor}">${fmt(runBal)}</span></div>
+    </div>`;
+
+  // ── Current Month Cards ──
+  const curTxns  = allTxns.filter(t=>t.date.startsWith(curMonth));
+  const prevTxns = allTxns.filter(t=>t.date.startsWith(prevMonth));
+  const mIncome  = curTxns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const mExpense = curTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const mInvest  = curTxns.filter(t=>t.type==='investment').reduce((s,t)=>s+t.amount,0);
+  const mNet     = mIncome - mExpense - mInvest;
+  const ccExpense= curTxns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').reduce((s,t)=>s+t.amount,0);
+  const pExpense = prevTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const expChg   = pExpense > 0 ? Math.round(((mExpense-pExpense)/pExpense)*100) : null;
+  const expChgHtml = expChg===null ? '' :
+    `<span style="font-size:11px;font-weight:600;color:${expChg>0?'var(--expense)':'var(--income)'}">${expChg>0?'▲':'▼'}${Math.abs(expChg)}% vs last month</span>`;
+  const monthName = new Date().toLocaleString('default',{month:'long',year:'numeric'});
 
   document.getElementById('summaryCards').innerHTML = `
     <div class="metric-card">
-      <div class="m-label" style="color:var(--income)"><i class="ti ti-trending-up"></i> Total Income</div>
-      <div class="m-value income">${fmt(totalIncome)}</div>
-      <div class="m-sub">${txns.filter(t=>t.type==='income').length} transactions</div>
+      <div class="m-label" style="color:var(--income)"><i class="ti ti-trending-up"></i> Income</div>
+      <div class="m-value income">${fmt(mIncome)}</div>
+      <div class="m-sub">${curTxns.filter(t=>t.type==='income').length} transactions</div>
     </div>
     <div class="metric-card">
-      <div class="m-label" style="color:var(--expense)"><i class="ti ti-trending-down"></i> Total Expenses</div>
-      <div class="m-value expense">${fmt(totalExpense)}</div>
-      <div class="m-sub">${txns.filter(t=>t.type==='expense').length} transactions</div>
+      <div class="m-label" style="color:var(--expense)"><i class="ti ti-trending-down"></i> Expenses</div>
+      <div class="m-value expense">${fmt(mExpense)}</div>
+      <div class="m-sub">${expChgHtml}</div>
     </div>
     <div class="metric-card">
-      <div class="m-label" style="color:var(--invest)"><i class="ti ti-chart-candle"></i> Total Invested</div>
-      <div class="m-value" style="color:var(--invest)">${fmt(totalInvest)}</div>
-      <div class="m-sub">${txns.filter(t=>t.type==='investment').length} investments</div>
+      <div class="m-label" style="color:var(--invest)"><i class="ti ti-chart-candle"></i> Invested</div>
+      <div class="m-value" style="color:var(--invest)">${fmt(mInvest)}</div>
+      <div class="m-sub">${curTxns.filter(t=>t.type==='investment').length} investments</div>
     </div>
     <div class="metric-card">
-      <div class="m-label"><i class="ti ti-scale"></i> Net Balance</div>
-      <div class="m-value ${net>=0?'positive':'negative'}">${fmt(net)}</div>
-      <div class="m-sub">Savings rate: ${savingsRate}%</div>
+      <div class="m-label"><i class="ti ti-scale"></i> Net This Month</div>
+      <div class="m-value ${mNet>=0?'positive':'negative'}">${fmt(mNet)}</div>
+      <div class="m-sub">Savings: ${mIncome>0?Math.round((mNet/mIncome)*100):0}%</div>
     </div>
     <div class="metric-card">
       <div class="m-label" style="color:var(--cc)"><i class="ti ti-credit-card"></i> CC Outstanding</div>
       <div class="m-value cc">${fmt(ccExpense)}</div>
-      <div class="m-sub">${txns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').length} CC txns</div>
+      <div class="m-sub">${curTxns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').length} CC txns</div>
     </div>`;
 
+  // ── All-time totals ──
+  const savRate = allIncome > 0 ? Math.round(((allIncome-allExpense)/allIncome)*100) : 0;
+  document.getElementById('alltimeCards').innerHTML = `
+    <div class="alltime-card"><div class="at-label">Total Income</div><div class="at-val income">${fmt(allIncome)}</div></div>
+    <div class="alltime-card"><div class="at-label">Total Expense</div><div class="at-val expense">${fmt(allExpense)}</div></div>
+    <div class="alltime-card"><div class="at-label">Total Invested</div><div class="at-val" style="color:var(--invest)">${fmt(allInvest)}</div></div>
+    <div class="alltime-card"><div class="at-label">Net Savings</div><div class="at-val ${(allIncome-allExpense-allInvest)>=0?'positive':'negative'}">${fmt(allIncome-allExpense-allInvest)}</div></div>
+    <div class="alltime-card"><div class="at-label">Savings Rate</div><div class="at-val" style="color:var(--income)">${savRate}%</div></div>`;
+
+  // ── Category bars (current month) ──
   const expTotals = {};
-  txns.filter(t=>t.type==='expense').forEach(t=>{ expTotals[t.category]=(expTotals[t.category]||0)+t.amount; });
+  curTxns.filter(t=>t.type==='expense').forEach(t=>{ expTotals[t.category]=(expTotals[t.category]||0)+t.amount; });
   const maxExp = Math.max(...Object.values(expTotals), 1);
-  const topExp = Object.entries(expTotals).sort((a,b)=>b[1]-a[1]).slice(0,6);
-  document.getElementById('expenseCats').innerHTML = topExp.length
-    ? topExp.map(([k,v])=>`<div class="cat-row"><div class="cat-lbl" title="${k}">${k}</div><div class="cat-track"><div class="cat-fill" style="width:${(v/maxExp*100).toFixed(0)}%;background:var(--expense-light)"></div></div><div class="cat-val">${fmt(v)}</div></div>`).join('')
-    : '<div class="empty"><i class="ti ti-chart-bar"></i>No expense data yet</div>';
+  document.getElementById('expenseCats').innerHTML = Object.entries(expTotals).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([k,v])=>
+    `<div class="cat-row"><div class="cat-lbl" title="${k}">${k}</div><div class="cat-track"><div class="cat-fill" style="width:${(v/maxExp*100).toFixed(0)}%;background:var(--expense-light)"></div></div><div class="cat-val">${fmt(v)}</div></div>`
+  ).join('') || '<div class="empty"><i class="ti ti-chart-bar"></i>No expense data this month</div>';
 
   const incTotals = {};
-  txns.filter(t=>t.type==='income').forEach(t=>{ incTotals[t.category]=(incTotals[t.category]||0)+t.amount; });
+  curTxns.filter(t=>t.type==='income').forEach(t=>{ incTotals[t.category]=(incTotals[t.category]||0)+t.amount; });
   const maxInc = Math.max(...Object.values(incTotals), 1);
-  document.getElementById('incomeCats').innerHTML = Object.keys(incTotals).length
-    ? Object.entries(incTotals).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([k,v])=>`<div class="cat-row"><div class="cat-lbl" title="${k}">${k}</div><div class="cat-track"><div class="cat-fill" style="width:${(v/maxInc*100).toFixed(0)}%;background:var(--income-light)"></div></div><div class="cat-val">${fmt(v)}</div></div>`).join('')
-    : '<div class="empty"><i class="ti ti-chart-bar"></i>No income data yet</div>';
+  document.getElementById('incomeCats').innerHTML = Object.entries(incTotals).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([k,v])=>
+    `<div class="cat-row"><div class="cat-lbl" title="${k}">${k}</div><div class="cat-track"><div class="cat-fill" style="width:${(v/maxInc*100).toFixed(0)}%;background:var(--income-light)"></div></div><div class="cat-val">${fmt(v)}</div></div>`
+  ).join('') || '<div class="empty"><i class="ti ti-chart-bar"></i>No income data this month</div>';
 
-  // Bank-wise UPI expense summary
+  // ── Bank summary (all-time UPI) ──
   const bankTotals = {};
-  txns.filter(t=>t.type==='expense'&&t.payment_mode==='UPI'&&t.upi_bank).forEach(t=>{
-    bankTotals[t.upi_bank]=(bankTotals[t.upi_bank]||{amt:0,count:0});
-    bankTotals[t.upi_bank].amt+=t.amount;
-    bankTotals[t.upi_bank].count++;
+  allTxns.filter(t=>t.type==='expense'&&t.payment_mode==='UPI'&&t.upi_bank).forEach(t=>{
+    bankTotals[t.upi_bank]=bankTotals[t.upi_bank]||{amt:0,count:0};
+    bankTotals[t.upi_bank].amt+=t.amount; bankTotals[t.upi_bank].count++;
   });
-  const bankEl = document.getElementById('bankSummary');
-  if(Object.keys(bankTotals).length){
-    bankEl.innerHTML = Object.entries(bankTotals).sort((a,b)=>b[1].amt-a[1].amt).map(([k,v])=>`
-      <div class="bank-card">
-        <div class="b-name"><i class="ti ti-building-bank"></i>${k}</div>
-        <div class="b-amt">${fmt(v.amt)}</div>
-        <div class="b-sub">${v.count} UPI transaction${v.count!==1?'s':''}</div>
-      </div>`).join('');
-  } else {
-    bankEl.innerHTML = '<div class="empty" style="padding:16px"><i class="ti ti-building-bank"></i>No UPI transactions with bank selected yet</div>';
-  }
+  document.getElementById('bankSummary').innerHTML = Object.keys(bankTotals).length
+    ? Object.entries(bankTotals).sort((a,b)=>b[1].amt-a[1].amt).map(([k,v])=>`
+        <div class="bank-card">
+          <div class="b-name"><i class="ti ti-building-bank"></i>${k}</div>
+          <div class="b-amt">${fmt(v.amt)}</div>
+          <div class="b-sub">${v.count} UPI transaction${v.count!==1?'s':''}</div>
+        </div>`).join('')
+    : '<div class="empty" style="padding:16px"><i class="ti ti-building-bank"></i>No UPI transactions with bank selected</div>';
 
-  // Investment sector summary on dashboard
+  // ── Investment sector summary ──
   const secTotals = {};
-  txns.filter(t=>t.type==='investment').forEach(t=>{
-    const s = t.invest_sector||'Other';
-    secTotals[s]=(secTotals[s]||0)+t.amount;
-  });
-  const invDashEl = document.getElementById('investSummaryDash');
-  if(Object.keys(secTotals).length){
-    invDashEl.innerHTML = Object.entries(secTotals).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
-      <div class="invest-sector-card">
-        <div class="is-name">${k}</div>
-        <div class="is-amt">${fmt(v)}</div>
-      </div>`).join('');
-  } else {
-    invDashEl.innerHTML = '<div class="empty" style="padding:16px"><i class="ti ti-chart-candle"></i>No investments recorded yet</div>';
-  }
+  allTxns.filter(t=>t.type==='investment').forEach(t=>{ const s=t.invest_sector||'Other'; secTotals[s]=(secTotals[s]||0)+t.amount; });
+  document.getElementById('investSummaryDash').innerHTML = Object.keys(secTotals).length
+    ? Object.entries(secTotals).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+        <div class="invest-sector-card"><div class="is-name">${k}</div><div class="is-amt">${fmt(v)}</div></div>`).join('')
+    : '<div class="empty" style="padding:16px"><i class="ti ti-chart-candle"></i>No investments recorded yet</div>';
 
-  const recent = [...txns].sort((a,b)=>b.timestamp-a.timestamp).slice(0,5);
+  // ── Recent transactions ──
+  const recent = [...allTxns].sort((a,b)=>b.timestamp-a.timestamp).slice(0,5);
   document.getElementById('recentTxns').innerHTML = recent.length
     ? recent.map(t=>txnHTML(t)).join('')
     : '<div class="empty"><i class="ti ti-inbox"></i>No transactions yet. Add one!</div>';
 }
+
 
 function txnHTML(t){
   const u = state.users.find(u=>u.id===t.user) || {name:'?',color:'#888'};
@@ -797,19 +963,6 @@ function renderReconcile(){
     : '<div class="empty"><i class="ti ti-credit-card-off"></i>No credit card transactions</div>';
 }
 
-function renderUserSettings(){
-  document.getElementById('userList').innerHTML = state.users.map(u => {
-    const initials = u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    return `<div class="user-row">
-      <div class="user-row-avatar" style="background:${u.color}22;color:${u.color}">${initials}</div>
-      <div class="user-row-name">${u.name}</div>
-      ${state.users.length>1?`<button class="user-row-del" onclick="deleteUser('${u.id}')"><i class="ti ti-trash"></i></button>`:''}
-    </div>`;
-  }).join('');
-  const cfg = state.config || {};
-  document.getElementById('cfg-sheet-id').value = cfg.sheetId || '';
-  document.getElementById('cfg-script-url').value = cfg.scriptUrl || '';
-}
 
 function renderInvestments(){
   const txns = state.transactions.filter(t=>t.type==='investment'&&t.user===state.activeUser);
@@ -839,11 +992,248 @@ function renderInvestments(){
     : '<div class="empty"><i class="ti ti-chart-candle"></i>No investment transactions yet</div>';
 }
 
+function renderTrends(){
+  const user = state.activeUser;
+  const allTxns = state.transactions.filter(t=>t.user===user);
+
+  // Build last 3 months
+  const now = new Date();
+  const months = [];
+  for(let i=2;i>=0;i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    months.push({
+      key: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,
+      label: d.toLocaleString('default',{month:'short',year:'2-digit'}),
+      fullLabel: d.toLocaleString('default',{month:'long',year:'numeric'})
+    });
+  }
+
+  // Aggregate per month
+  const mdata = months.map(m=>{
+    const txns = allTxns.filter(t=>t.date.startsWith(m.key));
+    const income  = txns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const expense = txns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    const invest  = txns.filter(t=>t.type==='investment').reduce((s,t)=>s+t.amount,0);
+    const net = income - expense - invest;
+    const catMap = {};
+    txns.filter(t=>t.type==='expense').forEach(t=>{ catMap[t.category]=(catMap[t.category]||0)+t.amount; });
+    const pmMap = {};
+    txns.filter(t=>t.type==='expense').forEach(t=>{ pmMap[t.payment_mode]=(pmMap[t.payment_mode]||0)+t.amount; });
+    return {...m, income, expense, invest, net, catMap, pmMap, txns};
+  });
+
+  // ── MoM Summary Cards ──
+  const cur = mdata[2], prev = mdata[1];
+  const pct = (a,b) => b===0 ? null : Math.round(((a-b)/b)*100);
+  const arrow = (v,invert=false) => {
+    if(v===null) return '<span class="change-chip neutral">new</span>';
+    const good = invert ? v<0 : v>=0;
+    return `<span class="change-chip ${good?'up':'down'}">${v>=0?'▲':'▼'} ${Math.abs(v)}% vs last month</span>`;
+  };
+  document.getElementById('momCards').innerHTML = [
+    {label:'Income '+cur.label, val:cur.income, chg:pct(cur.income,prev.income), inv:false, color:'var(--income)'},
+    {label:'Expense '+cur.label, val:cur.expense, chg:pct(cur.expense,prev.expense), inv:true, color:'var(--expense)'},
+    {label:'Invested '+cur.label, val:cur.invest, chg:pct(cur.invest,prev.invest), inv:false, color:'var(--invest)'},
+    {label:'Net Savings '+cur.label, val:cur.net, chg:pct(cur.net,prev.net), inv:false, color:cur.net>=0?'var(--income)':'var(--expense)'},
+  ].map(c=>`
+    <div class="mom-card">
+      <div class="mc-label">${c.label}</div>
+      <div class="mc-val" style="color:${c.color}">${fmt(c.val)}</div>
+      <div class="mc-change">${arrow(c.chg,c.inv)}</div>
+    </div>`).join('');
+
+  // ── Helper: SVG bar chart ──
+  const svgBarChart = (data, keys, colors, labels) => {
+    const W=560, H=200, PAD={t:20,r:20,b:40,l:70}, bw=H-PAD.t-PAD.b;
+    const maxVal = Math.max(...data.flatMap(d=>keys.map(k=>d[k]||0)), 1);
+    const chartW = W-PAD.l-PAD.r;
+    const groupW = chartW / data.length;
+    const barCount = keys.length;
+    const barW = Math.min(28, (groupW-12)/barCount);
+    const gap = (groupW - barW*barCount) / 2;
+
+    const yTicks = 4;
+    let gridLines = '';
+    let yLabels = '';
+    for(let i=0;i<=yTicks;i++){
+      const v = Math.round(maxVal * (yTicks-i)/yTicks);
+      const y = PAD.t + (bw * i/yTicks);
+      gridLines += `<line x1="${PAD.l}" y1="${y}" x2="${W-PAD.r}" y2="${y}" stroke="#e4e2dc" stroke-width="1"/>`;
+      yLabels += `<text x="${PAD.l-6}" y="${y+4}" text-anchor="end" font-size="10" fill="#9b9890">${v>=1000?(v/1000).toFixed(0)+'k':v}</text>`;
+    }
+
+    let bars = '';
+    data.forEach((d,gi)=>{
+      const gx = PAD.l + gi*groupW + gap;
+      keys.forEach((k,ki)=>{
+        const val = d[k]||0;
+        const bh = val/maxVal * bw;
+        const bx = gx + ki*barW;
+        const by = PAD.t + bw - bh;
+        bars += `<rect x="${bx}" y="${by}" width="${barW-2}" height="${bh}" rx="3" fill="${colors[ki]}" opacity="0.85"/>`;
+        if(val>0){
+          const label = val>=10000?(val/1000).toFixed(0)+'k': val>=1000?(val/1000).toFixed(1)+'k': val;
+          bars += `<text x="${bx+(barW-2)/2}" y="${by-4}" text-anchor="middle" font-size="9" fill="${colors[ki]}" font-weight="600">${label}</text>`;
+        }
+      });
+      const lx = PAD.l + gi*groupW + groupW/2;
+      bars += `<text x="${lx}" y="${H-PAD.b+16}" text-anchor="middle" font-size="11" fill="#6b6860" font-weight="500">${d.label}</text>`;
+    });
+
+    return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${gridLines}${yLabels}${bars}</svg>`;
+  };
+
+  // ── Grouped Bar Chart ──
+  const barData = mdata.map(m=>({label:m.label, income:m.income, expense:m.expense, invest:m.invest, net:Math.max(m.net,0)}));
+  document.getElementById('barChartWrap').innerHTML = svgBarChart(
+    barData,
+    ['income','expense','invest','net'],
+    ['#0f6e56','#993c1d','#7A4F1E','#3C3489'],
+    ['Income','Expense','Investment','Net']
+  );
+
+  // ── Line Chart (Net Balance trend) ──
+  const lineData = mdata.map(m=>m.net);
+  (() => {
+    const W=560,H=160,PAD={t:20,r:20,b:36,l:70};
+    const cW=W-PAD.l-PAD.r, cH=H-PAD.t-PAD.b;
+    const minV=Math.min(...lineData,0), maxV=Math.max(...lineData,1);
+    const range=maxV-minV||1;
+    const pts = mdata.map((m,i)=>{
+      const x=PAD.l + i*(cW/(mdata.length-1||1));
+      const y=PAD.t + cH - ((lineData[i]-minV)/range)*cH;
+      return {x,y,v:lineData[i],label:m.label};
+    });
+
+    const yTicks=4;
+    let grid='', yLbl='';
+    for(let i=0;i<=yTicks;i++){
+      const v=minV+(range*(yTicks-i)/yTicks);
+      const y=PAD.t+(cH*i/yTicks);
+      grid+=`<line x1="${PAD.l}" y1="${y}" x2="${W-PAD.r}" y2="${y}" stroke="#e4e2dc" stroke-width="1"/>`;
+      yLbl+=`<text x="${PAD.l-6}" y="${y+4}" text-anchor="end" font-size="10" fill="#9b9890">${v>=1000?(v/1000).toFixed(0)+'k':Math.round(v)}</text>`;
+    }
+
+    const polyline = pts.map(p=>`${p.x},${p.y}`).join(' ');
+    const areaPath = `M ${pts[0].x},${PAD.t+cH} L ${pts.map(p=>`${p.x},${p.y}`).join(' L ')} L ${pts[pts.length-1].x},${PAD.t+cH} Z`;
+
+    let circles='', labels='';
+    pts.forEach(p=>{
+      const col = p.v>=0?'#0f6e56':'#993c1d';
+      circles+=`<circle cx="${p.x}" cy="${p.y}" r="5" fill="${col}" stroke="#fff" stroke-width="2"/>`;
+      labels+=`<text x="${p.x}" y="${H-PAD.b+16}" text-anchor="middle" font-size="11" fill="#6b6860" font-weight="500">${p.label}</text>`;
+      const valStr=fmt(p.v);
+      labels+=`<text x="${p.x}" y="${p.y-10}" text-anchor="middle" font-size="10" fill="${col}" font-weight="600">${valStr}</text>`;
+    });
+
+    document.getElementById('lineChartWrap').innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="netGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f6e56" stop-opacity="0.15"/><stop offset="100%" stop-color="#0f6e56" stop-opacity="0"/></linearGradient></defs>
+      ${grid}${yLbl}
+      <path d="${areaPath}" fill="url(#netGrad)"/>
+      <polyline points="${polyline}" fill="none" stroke="#0f6e56" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      ${circles}${labels}
+    </svg>`;
+  })();
+
+  // ── Category Trend (mini bars per category, 3 months) ──
+  const allCats = [...new Set(mdata.flatMap(m=>Object.keys(m.catMap)))].sort();
+  const catMaxes = allCats.map(c=>Math.max(...mdata.map(m=>m.catMap[c]||0),1));
+  const catColors = ['#F5C4B3','#F0A080','#E87050'];
+  document.getElementById('catTrendList').innerHTML = allCats.length
+    ? allCats.map((cat,ci)=>{
+        const bars = mdata.map((m,mi)=>{
+          const val=m.catMap[cat]||0;
+          const pct=val/catMaxes[ci]*100;
+          return `<div class="cat-mini-bar" style="height:${Math.max(pct*0.36,3)}px;background:${catColors[mi]}" title="${m.fullLabel}: ${fmt(val)}"></div>`;
+        }).join('');
+        const latest = mdata[2].catMap[cat]||0;
+        const prev2 = mdata[1].catMap[cat]||0;
+        const chg = prev2===0 ? null : Math.round(((latest-prev2)/prev2)*100);
+        const chgHtml = chg===null ? '' : `<span style="font-size:10px;color:${chg>0?'var(--expense)':'var(--income)'};font-weight:600">${chg>0?'▲':'▼'}${Math.abs(chg)}%</span>`;
+        return `<div class="cat-trend-row">
+          <div class="cat-trend-name">${cat}</div>
+          <div class="cat-trend-bars">${bars}</div>
+          <div class="cat-trend-amt">${fmt(latest)} ${chgHtml}</div>
+        </div>`;
+      }).join('')
+    : '<div class="empty"><i class="ti ti-chart-bar"></i>No expense data yet</div>';
+
+  // ── Donut Chart (current month spending mix) ──
+  (() => {
+    const curCatMap = mdata[2].catMap;
+    const entries = Object.entries(curCatMap).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const total = entries.reduce((s,[,v])=>s+v,0)||1;
+    const palette = ['#993c1d','#d46940','#E87050','#7A4F1E','#3C3489','#534AB7'];
+    const W=220,H=220,cx=110,cy=110,R=80,r=50;
+    let startAngle=-Math.PI/2;
+    let slices='';
+    entries.forEach(([cat,val],i)=>{
+      const angle=(val/total)*2*Math.PI;
+      const endAngle=startAngle+angle;
+      const x1=cx+R*Math.cos(startAngle), y1=cy+R*Math.sin(startAngle);
+      const x2=cx+R*Math.cos(endAngle),   y2=cy+R*Math.sin(endAngle);
+      const ix1=cx+r*Math.cos(startAngle),iy1=cy+r*Math.sin(startAngle);
+      const ix2=cx+r*Math.cos(endAngle),  iy2=cy+r*Math.sin(endAngle);
+      const lg=angle>Math.PI?1:0;
+      slices+=`<path d="M ${ix1} ${iy1} L ${x1} ${y1} A ${R} ${R} 0 ${lg} 1 ${x2} ${y2} L ${ix2} ${iy2} A ${r} ${r} 0 ${lg} 0 ${ix1} ${iy1} Z" fill="${palette[i]}" opacity="0.88">
+        <title>${cat}: ${fmt(val)} (${Math.round(val/total*100)}%)</title></path>`;
+      startAngle=endAngle;
+    });
+    const totalFmt=fmt(total);
+    document.getElementById('donutChartWrap').innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:220px;margin:0 auto">
+      ${slices}
+      <text x="${cx}" y="${cy-8}" text-anchor="middle" font-size="11" fill="#6b6860" font-weight="500">Total</text>
+      <text x="${cx}" y="${cy+10}" text-anchor="middle" font-size="14" fill="#1a1917" font-weight="700">${totalFmt}</text>
+    </svg>`;
+    document.getElementById('donutLegend').innerHTML = entries.map(([cat,val],i)=>
+      `<div class="legend-item"><div class="legend-dot" style="background:${palette[i]}"></div>${cat} (${Math.round(val/total*100)}%)</div>`
+    ).join('');
+  })();
+
+  // ── Payment Mode Stacked Bar ──
+  (() => {
+    const modes = [...new Set(mdata.flatMap(m=>Object.keys(m.pmMap)))];
+    const pmColors = {'Credit Card':'#3C3489','UPI':'#1a5db5','Cash':'#6b6860','Net Banking':'#0f6e56','Debit Card':'#7A4F1E','EMI':'#993c1d','Cheque':'#534AB7'};
+    const W=560,H=160,PAD={t:20,r:20,b:36,l:70};
+    const cW=W-PAD.l-PAD.r, cH=H-PAD.t-PAD.b;
+    const maxTotal=Math.max(...mdata.map(m=>m.expense),1);
+    const barW=Math.min(60,cW/mdata.length*0.5);
+
+    const yTicks=4;
+    let grid='',yLbl='';
+    for(let i=0;i<=yTicks;i++){
+      const v=Math.round(maxTotal*(yTicks-i)/yTicks);
+      const y=PAD.t+(cH*i/yTicks);
+      grid+=`<line x1="${PAD.l}" y1="${y}" x2="${W-PAD.r}" y2="${y}" stroke="#e4e2dc" stroke-width="1"/>`;
+      yLbl+=`<text x="${PAD.l-6}" y="${y+4}" text-anchor="end" font-size="10" fill="#9b9890">${v>=1000?(v/1000).toFixed(0)+'k':v}</text>`;
+    }
+
+    let stackedBars='',xLabels='';
+    mdata.forEach((m,gi)=>{
+      const gx=PAD.l+gi*(cW/(mdata.length-1||1))-barW/2;
+      let cumY=PAD.t+cH;
+      modes.forEach(mode=>{
+        const val=m.pmMap[mode]||0;
+        if(!val)return;
+        const bh=val/maxTotal*cH;
+        cumY-=bh;
+        const col=pmColors[mode]||'#999';
+        stackedBars+=`<rect x="${gx}" y="${cumY}" width="${barW}" height="${bh}" fill="${col}" opacity="0.85"><title>${mode}: ${fmt(val)}</title></rect>`;
+      });
+      xLabels+=`<text x="${gx+barW/2}" y="${H-PAD.b+16}" text-anchor="middle" font-size="11" fill="#6b6860" font-weight="500">${m.label}</text>`;
+    });
+
+    document.getElementById('paymentChartWrap').innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${grid}${yLbl}${stackedBars}${xLabels}</svg>`;
+    document.getElementById('paymentLegend').innerHTML = modes.map(mode=>`<div class="legend-item"><div class="legend-dot" style="background:${pmColors[mode]||'#999'}"></div>${mode}</div>`).join('');
+  })();
+}
+
 function renderAll(){
   renderUserBar();
   renderDashboard();
   renderTransactions();
   renderInvestments();
+  renderTrends();
   renderReconcile();
   renderUserSettings();
 }
@@ -855,6 +1245,7 @@ function showPage(id, btn){
   if(btn) btn.classList.add('active');
   if(id==='transactions') renderTransactions();
   if(id==='investments') renderInvestments();
+  if(id==='trends') renderTrends();
   if(id==='reconcile') renderReconcile();
   if(id==='settings') renderUserSettings();
 }
@@ -994,6 +1385,45 @@ function deleteUser(id){
   state.users = state.users.filter(u=>u.id!==id);
   if(state.activeUser===id) state.activeUser = state.users[0].id;
   saveState(); renderAll();
+}
+
+function renderUserSettings(){
+  // User list
+  document.getElementById('userList').innerHTML = state.users.map(u=>{
+    const initials = u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    return `<div class="user-row">
+      <div class="user-row-avatar" style="background:${u.color}22;color:${u.color}">${initials}</div>
+      <div class="user-row-name">${u.name}</div>
+      ${state.users.length>1?`<button class="user-row-del" onclick="deleteUser('${u.id}')"><i class="ti ti-trash"></i></button>`:''}
+    </div>`;
+  }).join('');
+
+  // Opening balance grid
+  const ob = state.openingBalances || {};
+  document.getElementById('obGrid').innerHTML = state.users.map(u=>{
+    const initials = u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    return `<div class="ob-row">
+      <div class="ob-avatar" style="background:${u.color}22;color:${u.color}">${initials}</div>
+      <div class="ob-name">${u.name}</div>
+      <input class="ob-input" type="number" id="ob-${u.id}" placeholder="₹ 0" value="${ob[u.id]||''}" min="0" step="0.01">
+    </div>`;
+  }).join('');
+
+  // Config fields
+  const cfg = state.config || {};
+  document.getElementById('cfg-sheet-id').value = cfg.sheetId || '';
+  document.getElementById('cfg-script-url').value = cfg.scriptUrl || '';
+}
+
+function saveOpeningBalances(){
+  if(!state.openingBalances) state.openingBalances = {};
+  state.users.forEach(u=>{
+    const el = document.getElementById('ob-'+u.id);
+    if(el) state.openingBalances[u.id] = parseFloat(el.value)||0;
+  });
+  saveState();
+  renderDashboard();
+  showToast('Opening balances saved!');
 }
 
 function saveConfig(){
