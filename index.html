@@ -805,6 +805,12 @@ function loadState(){
     const s = localStorage.getItem('expTrackerState_v2');
     if(s){ const p = JSON.parse(s); state = Object.assign(state, p); }
   }catch(e){}
+  // Reset dashboardMonth if it's from a previous month — prevents stale month
+  // persisting across month boundaries (e.g. viewing May, reload on June 1 → still shows May)
+  const curMonthKey = getMonthKey(0);
+  if(state.dashboardMonth && state.dashboardMonth !== curMonthKey){
+    state.dashboardMonth = null;
+  }
   if(state.transactions.length === 0 && !(state.config && state.config.scriptUrl)){
     seedDemo();
   }
