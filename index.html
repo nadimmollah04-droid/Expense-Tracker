@@ -663,7 +663,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="add-card-row">
       <select id="new-card-name" style="flex:1;min-width:140px">
         <option value="">Select card to add...</option>
-       <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
+        <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
         <option>ICICI Credit Card</option><option>Axis Credit Card</option>
         <option>HDFC Credit Card</option><option>SBI Card</option><option>Other Credit Card</option>
       </select>
@@ -1025,8 +1025,8 @@ function renderDashboard(){
   // ── Viewing Bar ──
   const selMeta = months.find(m=>m.key===selMonth) || months[months.length-1];
   const prevKey = (()=>{
-    const d = new Date(selMonth+'-01');
-    d.setMonth(d.getMonth()-1);
+    const [y, m] = selMonth.split('-').map(Number);
+    const d = new Date(y, m - 2, 1); // local time constructor avoids UTC midnight rollback (IST fix)
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
   })();
   const prevTxns = allTxns.filter(t=>t.date.startsWith(prevKey));
