@@ -663,7 +663,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="add-card-row">
       <select id="new-card-name" style="flex:1;min-width:140px">
         <option value="">Select card to add...</option>
-        <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
+       <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
         <option>ICICI Credit Card</option><option>Axis Credit Card</option>
         <option>HDFC Credit Card</option><option>SBI Card</option><option>Other Credit Card</option>
       </select>
@@ -812,7 +812,7 @@ function loadState(){
 
 function seedDemo(){
   const today = new Date();
-  const days = n => { const d = new Date(today); d.setDate(d.getDate()-n); return d.toISOString().split('T')[0]; };
+  const days = n => { const d = new Date(today); d.setDate(d.getDate()-n); return localDateStr(d); };
   state.transactions = [
     {id:'t1',type:'income',category:'Salary',source:'Infosys',description:'Monthly salary',amount:85000,payment_mode:'Bank Transfer',credit_card:'',upi_bank:'',invest_sector:'',invest_platform:'',user:'u1',notes:'',date:days(2),timestamp:Date.now()-200000},
     {id:'t2',type:'expense',category:'Food & Dining',source:'Zomato',description:'Dinner order',amount:650,payment_mode:'Credit Card',credit_card:'HDFC Credit Card',upi_bank:'',invest_sector:'',invest_platform:'',user:'u1',notes:'',date:days(1),timestamp:Date.now()-100000},
@@ -918,6 +918,13 @@ async function manualSync(){
 }
 
 const fmt = n => '₹' + Number(n).toLocaleString('en-IN', {maximumFractionDigits:0});
+// Always use LOCAL date string (avoids UTC midnight timezone bug for IST users)
+const localDateStr = (d=new Date()) => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+};
 const uid = () => 't' + Date.now() + Math.random().toString(36).slice(2,6);
 
 function renderUserBar(){
@@ -1191,7 +1198,7 @@ function buildPeriod(startYear, startMonth, stmtDay){
   // Period: startYear/startMonth/stmtDay  →  one month later, stmtDay-1
   const start = new Date(startYear, startMonth, stmtDay);
   const end   = new Date(startYear, startMonth+1, stmtDay-1);
-  const fmtDate = dt => dt.toISOString().split('T')[0];
+  const fmtDate = dt => localDateStr(dt);
   const periodKey = fmtDate(start).slice(0,7); // YYYY-MM of start
   const label = `${start.toLocaleString('default',{month:'short',day:'numeric'})} – ${end.toLocaleString('default',{month:'short',day:'numeric',year:'numeric'})}`;
   return {start:fmtDate(start), end:fmtDate(end), periodKey, label, startYear, startMonth};
@@ -1423,7 +1430,7 @@ function payBill(cardId, cardName, periodKey, amount){
   state.ccPayments.push({
     id: 'pay'+Date.now(),
     cardId, cardName, periodKey, amount,
-    paidOn: new Date().toISOString().split('T')[0]
+    paidOn: localDateStr()
   });
   saveState();
   renderReconcile();
@@ -1779,7 +1786,7 @@ function addTransaction(type){
       invest_sector: '', invest_platform: '',
       user: state.activeUser,
       notes: document.getElementById('exp-notes').value,
-      date: document.getElementById('exp-date').value || new Date().toISOString().split('T')[0],
+      date: document.getElementById('exp-date').value || localDateStr(),
       timestamp: Date.now()
     };
     state.transactions.push(t);
@@ -1804,7 +1811,7 @@ function addTransaction(type){
       credit_card: '', upi_bank: '', invest_sector: '', invest_platform: '',
       user: state.activeUser,
       notes: document.getElementById('inc-notes').value,
-      date: document.getElementById('inc-date').value || new Date().toISOString().split('T')[0],
+      date: document.getElementById('inc-date').value || localDateStr(),
       timestamp: Date.now()
     };
     state.transactions.push(t);
@@ -1829,7 +1836,7 @@ function addTransaction(type){
       invest_platform: document.getElementById('inv-platform').value,
       user: state.activeUser,
       notes: document.getElementById('inv-notes').value,
-      date: document.getElementById('inv-date').value || new Date().toISOString().split('T')[0],
+      date: document.getElementById('inv-date').value || localDateStr(),
       timestamp: Date.now()
     };
     state.transactions.push(t);
@@ -1992,7 +1999,7 @@ function exportCSV(){
   const csv = [headers.join(','),...rows].join('\n');
   const a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = 'expense_tracker_' + new Date().toISOString().split('T')[0] + '.csv';
+  a.download = 'expense_tracker_' + localDateStr() + '.csv';
   a.click();
   showToast('CSV downloaded!');
 }
@@ -2000,7 +2007,7 @@ function exportCSV(){
 function exportJSON(){
   const a = document.createElement('a');
   a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(state.transactions, null, 2));
-  a.download = 'expense_tracker_' + new Date().toISOString().split('T')[0] + '.json';
+  a.download = 'expense_tracker_' + localDateStr() + '.json';
   a.click();
   showToast('JSON downloaded!');
 }
@@ -2021,7 +2028,7 @@ function showToast(msg){
   toastTimer = setTimeout(()=>t.classList.remove('show'), 2500);
 }
 
-const today = new Date().toISOString().split('T')[0];
+const today = localDateStr();
 document.getElementById('exp-date').value = today;
 document.getElementById('inc-date').value = today;
 document.getElementById('inv-date').value = today;
