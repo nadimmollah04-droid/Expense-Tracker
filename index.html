@@ -861,11 +861,26 @@ function setSyncStatus(icon, msg, color){
   if(btn) btn.style.display = 'flex';
 }
 
+function parseDateFromSheet(val){
+  if(!val) return '';
+  // If already a proper YYYY-MM-DD string, use as-is
+  if(typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+  // Google Sheets getValues() returns Date objects (or ISO strings after JSON round-trip).
+  // These are midnight UTC, which in IST (UTC+5:30) rolls back to the previous day.
+  // Fix: parse as Date and use LOCAL date parts to reconstruct YYYY-MM-DD.
+  const d = new Date(val);
+  if(isNaN(d.getTime())) return String(val).slice(0,10);
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
 function parseSheetRow(row){
   if(!row[0] || row[0]==='id') return null;
   return {
     id           : String(row[0]||''),
-    date         : String(row[1]||''),
+    date         : parseDateFromSheet(row[1]),
     type         : String(row[2]||'expense'),
     category     : String(row[3]||'Other'),
     source       : String(row[4]||''),
