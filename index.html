@@ -218,6 +218,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--text);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:300;opacity:0;transition:all 0.25s;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+/* MONTH PICKER */
+.month-picker-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.month-picker-row .mp-label{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;white-space:nowrap}
+.month-tabs{display:flex;gap:4px;flex-wrap:wrap;flex:1}
+.month-tab{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2);transition:all 0.15s;white-space:nowrap}
+.month-tab:hover{border-color:var(--border2);color:var(--text)}
+.month-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+.month-tab.is-current{border-color:var(--income);color:var(--income)}
+.month-tab.is-current.active{background:var(--income);color:#fff;border-color:var(--income)}
+.viewing-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:10px 14px;border-radius:var(--radius-sm);margin-bottom:12px;border:1px solid var(--border);background:var(--surface2)}
+.viewing-bar.is-current{background:var(--income-bg);border-color:var(--income-light)}
+.viewing-bar .vb-label{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+.viewing-bar.is-current .vb-label{color:var(--income)}
+.viewing-bar .vb-sub{font-size:12px;color:var(--text3)}
+
 /* CC RECONCILE - STATEMENT BASED */
 .cc-statement-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0;margin-bottom:14px;box-shadow:var(--shadow);overflow:hidden}
 .cc-stmt-header{padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
@@ -310,6 +325,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="topbar-left">
     <div class="logo-icon"><i class="ti ti-wallet"></i></div>
     <h1>Expense Tracker</h1>
+    <div id="syncStatus" style="display:none;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text3)"></div>
+    <button onclick="manualSync()" title="Sync from Google Sheet" style="display:none;width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-size:14px;align-items:center;justify-content:center;color:var(--text2);transition:background 0.15s" id="syncBtn"><i class="ti ti-refresh"></i></button>
   </div>
   <div class="user-bar" id="userBar"></div>
 </div>
@@ -334,8 +351,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <!-- Running Balance Hero -->
   <div class="balance-hero" id="balanceHero"></div>
 
-  <!-- Current Month -->
-  <div class="section-label"><i class="ti ti-calendar-month"></i> This Month</div>
+  <!-- Month Picker -->
+  <div class="month-picker-row">
+    <span class="mp-label"><i class="ti ti-calendar"></i> View</span>
+    <div class="month-tabs" id="monthTabs"></div>
+  </div>
+
+  <!-- Viewing indicator -->
+  <div class="viewing-bar" id="viewingBar"></div>
+
+  <!-- Month Summary Cards -->
+  <div class="section-label" id="monthSectionLabel"><i class="ti ti-calendar-month"></i> This Month</div>
   <div class="cards-row" id="summaryCards"></div>
 
   <!-- All-time totals -->
@@ -361,7 +387,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="bank-grid" id="investSummaryDash"></div>
   </div>
   <div class="section-card">
-    <h3><i class="ti ti-history"></i> Recent Transactions</h3>
+    <h3><i class="ti ti-history"></i> Transactions</h3>
     <div class="txn-list" id="recentTxns"></div>
   </div>
 </div>
@@ -419,7 +445,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <label><i class="ti ti-credit-card"></i> Select Credit Card</label>
       <select id="exp-cc-card">
         <option value="">Select card</option>
-<option>HSBC Credit Card</option><option>AMEX Credit Card</option>
+        <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
         <option>ICICI Credit Card</option><option>Axis Credit Card</option>
         <option>HDFC Credit Card</option><option>SBI Card</option><option>Other Credit Card</option>
       </select>
@@ -674,6 +700,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div><!-- end content -->
 </div><!-- end app -->
 
+<!-- SYNC LOADING OVERLAY -->
+<div id="syncOverlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:500;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+  <div style="width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin 0.8s linear infinite"></div>
+  <div id="syncMsg" style="font-size:14px;font-weight:500;color:var(--text2)">Syncing data…</div>
+  <div id="syncSub" style="font-size:12px;color:var(--text3)">Fetching from Google Sheet</div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -760,8 +794,9 @@ let state = {
   transactions: [],
   activeUser: 'u1',
   openingBalances: {},
-  ccCards: [],        // [{id, name, stmtDay, dueDay}]
-  ccPayments: [],     // [{id, cardId, periodKey, amount, paidOn}]
+  dashboardMonth: null,   // null = current month
+  ccCards: [],
+  ccPayments: [],
   config: {sheetId:'',scriptUrl:''}
 };
 
@@ -770,7 +805,9 @@ function loadState(){
     const s = localStorage.getItem('expTrackerState_v2');
     if(s){ const p = JSON.parse(s); state = Object.assign(state, p); }
   }catch(e){}
-  if(state.transactions.length === 0){ seedDemo(); }
+  if(state.transactions.length === 0 && !(state.config && state.config.scriptUrl)){
+    seedDemo();
+  }
 }
 
 function seedDemo(){
@@ -791,7 +828,93 @@ function seedDemo(){
 }
 
 function saveState(){
-  try{ localStorage.setItem('expTrackerState_v2', JSON.stringify(state)); }catch(e){}
+  try{
+    const connected = !!(state.config && state.config.scriptUrl);
+    const toSave = {
+      users: state.users,
+      activeUser: state.activeUser,
+      openingBalances: state.openingBalances,
+      dashboardMonth: state.dashboardMonth,
+      ccCards: state.ccCards,
+      ccPayments: state.ccPayments,
+      config: state.config
+    };
+    if(!connected) toSave.transactions = state.transactions;
+    localStorage.setItem('expTrackerState_v2', JSON.stringify(toSave));
+  }catch(e){}
+}
+
+// ── Sheet sync ──
+function setSyncStatus(icon, msg, color){
+  const el = document.getElementById('syncStatus');
+  const btn = document.getElementById('syncBtn');
+  if(!el) return;
+  el.style.display = 'flex';
+  el.style.color = color || 'var(--text3)';
+  el.innerHTML = `<i class="ti ti-${icon}" style="font-size:12px"></i> ${msg}`;
+  if(btn) btn.style.display = 'flex';
+}
+
+function parseSheetRow(row){
+  if(!row[0] || row[0]==='id') return null;
+  return {
+    id           : String(row[0]||''),
+    date         : String(row[1]||''),
+    type         : String(row[2]||'expense'),
+    category     : String(row[3]||'Other'),
+    source       : String(row[4]||''),
+    description  : String(row[5]||''),
+    amount       : parseFloat(row[6])||0,
+    payment_mode : String(row[7]||''),
+    credit_card  : String(row[8]||''),
+    user         : String(row[9]||'u1'),
+    notes        : String(row[10]||''),
+    timestamp    : row[11] ? new Date(row[11]).getTime() : Date.now(),
+    upi_bank     : String(row[13]||''),
+    invest_sector: String(row[14]||''),
+    invest_platform: String(row[15]||'')
+  };
+}
+
+async function syncFromSheet(showOverlay=true){
+  const url = state.config && state.config.scriptUrl;
+  if(!url){ setSyncStatus('cloud-off','Not connected','var(--text3)'); return; }
+  if(showOverlay){
+    document.getElementById('syncOverlay').style.display = 'flex';
+  }
+  setSyncStatus('refresh','Syncing…','var(--text2)');
+  try{
+    const res  = await fetch(`${url}?action=getAll`);
+    const data = await res.json();
+    const rows = Array.isArray(data) ? data : [];
+    state.transactions = rows.map(parseSheetRow).filter(Boolean);
+    setSyncStatus('cloud-check','Synced','var(--income)');
+    setTimeout(()=>setSyncStatus('cloud','Connected','var(--text3)'), 3000);
+  }catch(err){
+    setSyncStatus('cloud-x','Sync failed','var(--expense)');
+  }
+  document.getElementById('syncOverlay').style.display = 'none';
+  renderAll();
+}
+
+async function manualSync(){
+  const url = state.config && state.config.scriptUrl;
+  if(!url){ showToast('No sheet connected — add URL in Settings'); return; }
+  setSyncStatus('refresh','Syncing…','var(--text2)');
+  showToast('Syncing from Google Sheet…');
+  try{
+    const res  = await fetch(`${url}?action=getAll`);
+    const data = await res.json();
+    const rows = Array.isArray(data) ? data : [];
+    state.transactions = rows.map(parseSheetRow).filter(Boolean);
+    setSyncStatus('cloud-check','Synced','var(--income)');
+    setTimeout(()=>setSyncStatus('cloud','Connected','var(--text3)'), 3000);
+    renderAll();
+    showToast('Synced successfully ✓');
+  }catch(err){
+    setSyncStatus('cloud-x','Sync failed','var(--expense)');
+    showToast('Sync failed — check connection');
+  }
 }
 
 const fmt = n => '₹' + Number(n).toLocaleString('en-IN', {maximumFractionDigits:0});
@@ -835,19 +958,39 @@ function getMonthKey(offsetMonths=0){
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
 }
 
+function getAvailableMonths(){
+  // Returns last 12 months as [{key:'YYYY-MM', label:'Jun 25', isCurrent:bool}]
+  const months = [];
+  const now = new Date();
+  for(let i=11; i>=0; i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const label = d.toLocaleString('default',{month:'short',year:'2-digit'});
+    const fullLabel = d.toLocaleString('default',{month:'long',year:'numeric'});
+    months.push({key, label, fullLabel, isCurrent: i===0});
+  }
+  return months;
+}
+
+function setDashboardMonth(key){
+  state.dashboardMonth = key;
+  renderDashboard();
+}
+
 function renderDashboard(){
   const uid = state.activeUser;
   const allTxns = state.transactions.filter(t=>t.user===uid);
-  const curMonth = getMonthKey(0);
-  const prevMonth = getMonthKey(-1);
+  const curMonthKey = getMonthKey(0);
+  const selMonth = state.dashboardMonth || curMonthKey;
+  const isCurrent = selMonth === curMonthKey;
 
-  // ── Running Balance Hero ──
+  // ── Running Balance Hero (always all-time, never filtered) ──
   const runBal = computeRunningBalance(uid);
   const openingBal = (state.openingBalances && state.openingBalances[uid]) || 0;
   const allIncome  = allTxns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
   const allExpense = allTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
   const allInvest  = allTxns.filter(t=>t.type==='investment').reduce((s,t)=>s+t.amount,0);
-  const balColor = runBal >= 0 ? '#4ADE80' : '#F87171';
+  const balColor   = runBal >= 0 ? '#4ADE80' : '#F87171';
   document.getElementById('balanceHero').innerHTML = `
     <div class="balance-hero-left">
       <h3><i class="ti ti-wallet"></i> Running Balance</h3>
@@ -862,48 +1005,80 @@ function renderDashboard(){
       <div class="bal-row"><span class="bal-row-label">= Balance</span><span class="bal-row-val" style="color:${balColor}">${fmt(runBal)}</span></div>
     </div>`;
 
-  // ── Current Month Cards ──
-  const curTxns  = allTxns.filter(t=>t.date.startsWith(curMonth));
-  const prevTxns = allTxns.filter(t=>t.date.startsWith(prevMonth));
-  const mIncome  = curTxns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
-  const mExpense = curTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
-  const mInvest  = curTxns.filter(t=>t.type==='investment').reduce((s,t)=>s+t.amount,0);
+  // ── Month Tabs ──
+  const months = getAvailableMonths();
+  // Only show months that have transactions OR is current month
+  const activeMos = months.filter(m=>m.isCurrent||allTxns.some(t=>t.date.startsWith(m.key)));
+  document.getElementById('monthTabs').innerHTML = activeMos.map(m=>`
+    <button class="month-tab ${m.isCurrent?'is-current':''} ${m.key===selMonth?'active':''}"
+      onclick="setDashboardMonth('${m.key}')">
+      ${m.label}${m.isCurrent?' ●':''}
+    </button>`).join('');
+
+  // ── Viewing Bar ──
+  const selMeta = months.find(m=>m.key===selMonth) || months[months.length-1];
+  const prevKey = (()=>{
+    const d = new Date(selMonth+'-01');
+    d.setMonth(d.getMonth()-1);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  })();
+  const prevTxns = allTxns.filter(t=>t.date.startsWith(prevKey));
+  const selTxns  = allTxns.filter(t=>t.date.startsWith(selMonth));
+  const selExp   = selTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const prevExp  = prevTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const chg      = prevExp>0 ? Math.round(((selExp-prevExp)/prevExp)*100) : null;
+  const chgHtml  = chg===null ? '' :
+    `<span style="font-size:12px;font-weight:600;color:${chg>0?'var(--expense)':'var(--income)'};margin-left:8px">${chg>0?'▲':'▼'}${Math.abs(chg)}% expense vs prev month</span>`;
+  document.getElementById('viewingBar').className = `viewing-bar${isCurrent?' is-current':''}`;
+  document.getElementById('viewingBar').innerHTML = `
+    <div class="vb-label">
+      <i class="ti ti-calendar-month"></i>
+      ${selMeta.fullLabel}${isCurrent?' <span style="font-size:11px;opacity:0.7">(Current)</span>':''}
+      ${chgHtml}
+    </div>
+    <div class="vb-sub">${selTxns.length} transaction${selTxns.length!==1?'s':''} · ${fmt(selExp)} spent</div>`;
+
+  // ── Section label ──
+  document.getElementById('monthSectionLabel').innerHTML =
+    `<i class="ti ti-calendar-month"></i> ${isCurrent?'This Month':selMeta.fullLabel}`;
+
+  // ── Month Summary Cards ──
+  const mIncome  = selTxns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const mExpense = selExp;
+  const mInvest  = selTxns.filter(t=>t.type==='investment').reduce((s,t)=>s+t.amount,0);
   const mNet     = mIncome - mExpense - mInvest;
-  const ccExpense= curTxns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').reduce((s,t)=>s+t.amount,0);
-  const pExpense = prevTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
-  const expChg   = pExpense > 0 ? Math.round(((mExpense-pExpense)/pExpense)*100) : null;
-  const expChgHtml = expChg===null ? '' :
-    `<span style="font-size:11px;font-weight:600;color:${expChg>0?'var(--expense)':'var(--income)'}">${expChg>0?'▲':'▼'}${Math.abs(expChg)}% vs last month</span>`;
-  const monthName = new Date().toLocaleString('default',{month:'long',year:'numeric'});
+  const ccExp    = selTxns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').reduce((s,t)=>s+t.amount,0);
+  const expChgHtml = chg===null ? '' :
+    `<span style="font-size:11px;font-weight:600;color:${chg>0?'var(--expense)':'var(--income)'}">${chg>0?'▲':'▼'}${Math.abs(chg)}% vs prev</span>`;
 
   document.getElementById('summaryCards').innerHTML = `
     <div class="metric-card">
       <div class="m-label" style="color:var(--income)"><i class="ti ti-trending-up"></i> Income</div>
       <div class="m-value income">${fmt(mIncome)}</div>
-      <div class="m-sub">${curTxns.filter(t=>t.type==='income').length} transactions</div>
+      <div class="m-sub">${selTxns.filter(t=>t.type==='income').length} transactions</div>
     </div>
     <div class="metric-card">
       <div class="m-label" style="color:var(--expense)"><i class="ti ti-trending-down"></i> Expenses</div>
       <div class="m-value expense">${fmt(mExpense)}</div>
-      <div class="m-sub">${expChgHtml}</div>
+      <div class="m-sub">${expChgHtml||selTxns.filter(t=>t.type==='expense').length+' transactions'}</div>
     </div>
     <div class="metric-card">
       <div class="m-label" style="color:var(--invest)"><i class="ti ti-chart-candle"></i> Invested</div>
       <div class="m-value" style="color:var(--invest)">${fmt(mInvest)}</div>
-      <div class="m-sub">${curTxns.filter(t=>t.type==='investment').length} investments</div>
+      <div class="m-sub">${selTxns.filter(t=>t.type==='investment').length} investments</div>
     </div>
     <div class="metric-card">
-      <div class="m-label"><i class="ti ti-scale"></i> Net This Month</div>
+      <div class="m-label"><i class="ti ti-scale"></i> Net ${isCurrent?'This Month':selMeta.label}</div>
       <div class="m-value ${mNet>=0?'positive':'negative'}">${fmt(mNet)}</div>
       <div class="m-sub">Savings: ${mIncome>0?Math.round((mNet/mIncome)*100):0}%</div>
     </div>
     <div class="metric-card">
-      <div class="m-label" style="color:var(--cc)"><i class="ti ti-credit-card"></i> CC Outstanding</div>
-      <div class="m-value cc">${fmt(ccExpense)}</div>
-      <div class="m-sub">${curTxns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').length} CC txns</div>
+      <div class="m-label" style="color:var(--cc)"><i class="ti ti-credit-card"></i> CC Spent</div>
+      <div class="m-value cc">${fmt(ccExp)}</div>
+      <div class="m-sub">${selTxns.filter(t=>t.type==='expense'&&t.payment_mode==='Credit Card').length} CC txns</div>
     </div>`;
 
-  // ── All-time totals ──
+  // ── All-time totals (always fixed) ──
   const savRate = allIncome > 0 ? Math.round(((allIncome-allExpense)/allIncome)*100) : 0;
   document.getElementById('alltimeCards').innerHTML = `
     <div class="alltime-card"><div class="at-label">Total Income</div><div class="at-val income">${fmt(allIncome)}</div></div>
@@ -912,24 +1087,24 @@ function renderDashboard(){
     <div class="alltime-card"><div class="at-label">Net Savings</div><div class="at-val ${(allIncome-allExpense-allInvest)>=0?'positive':'negative'}">${fmt(allIncome-allExpense-allInvest)}</div></div>
     <div class="alltime-card"><div class="at-label">Savings Rate</div><div class="at-val" style="color:var(--income)">${savRate}%</div></div>`;
 
-  // ── Category bars (current month) ──
+  // ── Category bars (selected month) ──
   const expTotals = {};
-  curTxns.filter(t=>t.type==='expense').forEach(t=>{ expTotals[t.category]=(expTotals[t.category]||0)+t.amount; });
+  selTxns.filter(t=>t.type==='expense').forEach(t=>{ expTotals[t.category]=(expTotals[t.category]||0)+t.amount; });
   const maxExp = Math.max(...Object.values(expTotals), 1);
   document.getElementById('expenseCats').innerHTML = Object.entries(expTotals).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([k,v])=>
     `<div class="cat-row"><div class="cat-lbl" title="${k}">${k}</div><div class="cat-track"><div class="cat-fill" style="width:${(v/maxExp*100).toFixed(0)}%;background:var(--expense-light)"></div></div><div class="cat-val">${fmt(v)}</div></div>`
-  ).join('') || '<div class="empty"><i class="ti ti-chart-bar"></i>No expense data this month</div>';
+  ).join('') || `<div class="empty"><i class="ti ti-chart-bar"></i>No expense data for ${selMeta.label}</div>`;
 
   const incTotals = {};
-  curTxns.filter(t=>t.type==='income').forEach(t=>{ incTotals[t.category]=(incTotals[t.category]||0)+t.amount; });
+  selTxns.filter(t=>t.type==='income').forEach(t=>{ incTotals[t.category]=(incTotals[t.category]||0)+t.amount; });
   const maxInc = Math.max(...Object.values(incTotals), 1);
   document.getElementById('incomeCats').innerHTML = Object.entries(incTotals).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([k,v])=>
     `<div class="cat-row"><div class="cat-lbl" title="${k}">${k}</div><div class="cat-track"><div class="cat-fill" style="width:${(v/maxInc*100).toFixed(0)}%;background:var(--income-light)"></div></div><div class="cat-val">${fmt(v)}</div></div>`
-  ).join('') || '<div class="empty"><i class="ti ti-chart-bar"></i>No income data this month</div>';
+  ).join('') || `<div class="empty"><i class="ti ti-chart-bar"></i>No income data for ${selMeta.label}</div>`;
 
-  // ── Bank summary (all-time UPI) ──
+  // ── Bank summary (selected month UPI) ──
   const bankTotals = {};
-  allTxns.filter(t=>t.type==='expense'&&t.payment_mode==='UPI'&&t.upi_bank).forEach(t=>{
+  selTxns.filter(t=>t.type==='expense'&&t.payment_mode==='UPI'&&t.upi_bank).forEach(t=>{
     bankTotals[t.upi_bank]=bankTotals[t.upi_bank]||{amt:0,count:0};
     bankTotals[t.upi_bank].amt+=t.amount; bankTotals[t.upi_bank].count++;
   });
@@ -940,21 +1115,21 @@ function renderDashboard(){
           <div class="b-amt">${fmt(v.amt)}</div>
           <div class="b-sub">${v.count} UPI transaction${v.count!==1?'s':''}</div>
         </div>`).join('')
-    : '<div class="empty" style="padding:16px"><i class="ti ti-building-bank"></i>No UPI transactions with bank selected</div>';
+    : `<div class="empty" style="padding:16px"><i class="ti ti-building-bank"></i>No UPI transactions for ${selMeta.label}</div>`;
 
-  // ── Investment sector summary ──
+  // ── Investment sector (selected month) ──
   const secTotals = {};
-  allTxns.filter(t=>t.type==='investment').forEach(t=>{ const s=t.invest_sector||'Other'; secTotals[s]=(secTotals[s]||0)+t.amount; });
+  selTxns.filter(t=>t.type==='investment').forEach(t=>{ const s=t.invest_sector||'Other'; secTotals[s]=(secTotals[s]||0)+t.amount; });
   document.getElementById('investSummaryDash').innerHTML = Object.keys(secTotals).length
     ? Object.entries(secTotals).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
         <div class="invest-sector-card"><div class="is-name">${k}</div><div class="is-amt">${fmt(v)}</div></div>`).join('')
-    : '<div class="empty" style="padding:16px"><i class="ti ti-chart-candle"></i>No investments recorded yet</div>';
+    : `<div class="empty" style="padding:16px"><i class="ti ti-chart-candle"></i>No investments for ${selMeta.label}</div>`;
 
-  // ── Recent transactions ──
-  const recent = [...allTxns].sort((a,b)=>b.timestamp-a.timestamp).slice(0,5);
-  document.getElementById('recentTxns').innerHTML = recent.length
-    ? recent.map(t=>txnHTML(t)).join('')
-    : '<div class="empty"><i class="ti ti-inbox"></i>No transactions yet. Add one!</div>';
+  // ── Transactions (selected month, most recent first) ──
+  const selSorted = [...selTxns].sort((a,b)=>b.timestamp-a.timestamp);
+  document.getElementById('recentTxns').innerHTML = selSorted.length
+    ? selSorted.map(t=>txnHTML(t)).join('')
+    : `<div class="empty"><i class="ti ti-inbox"></i>No transactions for ${selMeta.fullLabel}</div>`;
 }
 
 
@@ -1789,7 +1964,7 @@ async function pushToSheet(t){
   try{
     await fetch(url, {method:'POST', body: JSON.stringify({
       action: 'addTransaction',
-      row: [t.id,t.date,t.type,t.category,t.source,t.description,t.amount,t.payment_mode,t.credit_card,t.user,t.notes,new Date().toISOString(),false]
+      row: [t.id,t.date,t.type,t.category,t.source,t.description,t.amount,t.payment_mode,t.credit_card,t.user,t.notes,new Date().toISOString(),false,t.upi_bank||'',t.invest_sector||'',t.invest_platform||'']
     })});
   }catch(e){}
 }
@@ -1852,7 +2027,14 @@ document.getElementById('inc-date').value = today;
 document.getElementById('inv-date').value = today;
 
 loadState();
-renderAll();
+// If sheet connected, sync first — otherwise render local data immediately
+if(state.config && state.config.scriptUrl){
+  syncFromSheet(true);
+} else {
+  renderAll();
+  setSyncStatus('cloud-off','No sheet connected','var(--text3)');
+}
+// Manual sync only — use the ↻ button in the topbar
 </script>
 </body>
 </html>
