@@ -783,6 +783,17 @@ function doPost(e) {
       }
     }
     result = {ok: true};
+  } else if (payload.action === 'reconcileTransactions') {
+    // Mark a list of transaction IDs as reconciled (column 13, index 12)
+    var sheet = ss.getSheetByName('Transactions');
+    var data = sheet.getDataRange().getValues();
+    var ids = payload.ids; // array of transaction IDs
+    for (var i = 1; i < data.length; i++) {
+      if (ids.indexOf(String(data[i][0])) !== -1) {
+        sheet.getRange(i + 1, 13).setValue(true); // column M = reconciled
+      }
+    }
+    result = {ok: true, updated: ids.length};
   }
   return ContentService
     .createTextOutput(JSON.stringify(result))
@@ -1454,9 +1465,22 @@ function payBill(cardId, cardName, periodKey, amount){
     paidOn: localDateStr()
   });
   saveState();
+  // Find transactions in this billing period and mark reconciled in the sheet
+  const card = (state.ccCards||[]).find(c=>c.id===cardId);
+  const cardNameForTxns = card ? card.name : cardName;
+  const [py, pm] = periodKey.split('-').map(Number);
+  const stmtDay = card ? card.stmtDay : 1;
+  // period runs from stmtDay of prev month to stmtDay-1 of current month
+  const periodStart = `${py}-${String(pm).padStart(2,'0')}-${String(stmtDay).padStart(2,'0')}`;
+  const endDate = new Date(py, pm, stmtDay - 1); // local time
+  const periodEnd = `${endDate.getFullYear()}-${String(endDate.getMonth()+1).padStart(2,'0')}-${String(endDate.getDate()).padStart(2,'0')}`;
+  const txnIds = state.transactions
+    .filter(t => t.credit_card === cardNameForTxns && t.date >= periodStart && t.date <= periodEnd)
+    .map(t => t.id);
+  if(txnIds.length > 0) reconcileInSheet(txnIds);
   renderReconcile();
   renderDashboard();
-  showToast(`${cardName} bill marked as paid!`);
+  showToast(`${cardName} bill marked as paid! ${txnIds.length} transaction${txnIds.length!==1?'s':''} reconciled in sheet.`);
 }
 
 function addCCCard(){
@@ -2003,6 +2027,14 @@ async function deleteFromSheet(id){
   try{
     await fetch(url, {method:'POST', body: JSON.stringify({action:'deleteTransaction', id})});
   }catch(e){}
+}
+
+async function reconcileInSheet(ids){
+  const url = state.config && state.config.scriptUrl;
+  if(!url || !ids || ids.length===0) return;
+  try{
+    await fetch(url, {method:'POST', body: JSON.stringify({action:'reconcileTransactions', ids})});
+  }catch(e){ console.warn('reconcileInSheet failed:', e); }
 }
 
 function showAppsScript(){
