@@ -115,6 +115,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .bank-card .b-name{font-size:11px;font-weight:600;color:#1a5db5;margin-bottom:4px;display:flex;align-items:center;gap:4px}
 .bank-card .b-amt{font-size:18px;font-weight:600;color:var(--text)}
 .bank-card .b-sub{font-size:11px;color:var(--text3);margin-top:2px}
+/* CC DASHBOARD SUMMARY */
+.cc-dash-card{background:#FFF3F0;border:1px solid #F7C5B3}
+.cc-dash-card .b-name{color:#993c1d}
+.cc-dash-card .b-amt.cc{color:var(--cc)}
+.cc-dash-bar-track{height:4px;background:#f0d0c8;border-radius:2px;margin:6px 0 4px}
+.cc-dash-bar-fill{height:4px;background:var(--cc);border-radius:2px;transition:width 0.4s}
+.cc-dash-cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.cc-dash-cat{font-size:10px;background:#ffe8e0;color:#993c1d;border-radius:3px;padding:2px 6px;font-weight:500}
 /* INVEST PAGE */
 .invest-hero{background:var(--invest-bg);border:1px solid var(--invest-light);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px}
 .invest-hero h3{font-size:12px;font-weight:600;color:var(--invest);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
@@ -387,8 +395,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="bank-grid" id="investSummaryDash"></div>
   </div>
   <div class="section-card">
-    <h3><i class="ti ti-history"></i> Transactions</h3>
-    <div class="txn-list" id="recentTxns"></div>
+    <h3><i class="ti ti-credit-card"></i> Credit Card Expenses</h3>
+    <div class="bank-grid" id="ccCardSummaryDash"></div>
   </div>
 </div>
 
@@ -663,7 +671,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="add-card-row">
       <select id="new-card-name" style="flex:1;min-width:140px">
         <option value="">Select card to add...</option>
-        <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
+        <<option>HSBC Credit Card</option><option>AMEX Credit Card</option>
         <option>ICICI Credit Card</option><option>Axis Credit Card</option>
         <option>HDFC Credit Card</option><option>SBI Card</option><option>Other Credit Card</option>
       </select>
@@ -1164,11 +1172,30 @@ function renderDashboard(){
         <div class="invest-sector-card"><div class="is-name">${k}</div><div class="is-amt">${fmt(v)}</div></div>`).join('')
     : `<div class="empty" style="padding:16px"><i class="ti ti-chart-candle"></i>No investments for ${selMeta.label}</div>`;
 
-  // ── Transactions (selected month, most recent first) ──
-  const selSorted = [...selTxns].sort((a,b)=>b.timestamp-a.timestamp);
-  document.getElementById('recentTxns').innerHTML = selSorted.length
-    ? selSorted.map(t=>txnHTML(t)).join('')
-    : `<div class="empty"><i class="ti ti-inbox"></i>No transactions for ${selMeta.fullLabel}</div>`;
+  // ── CC Card Summary (selected month) ──
+  const ccTotals = {};
+  selTxns.filter(t=>t.type==='expense' && t.payment_mode==='Credit Card').forEach(t=>{
+    const card = t.credit_card || 'Credit Card';
+    ccTotals[card] = ccTotals[card] || {amt:0, count:0, cats:{}};
+    ccTotals[card].amt   += t.amount;
+    ccTotals[card].count += 1;
+    ccTotals[card].cats[t.category] = (ccTotals[card].cats[t.category]||0) + t.amount;
+  });
+  const maxCC = Math.max(...Object.values(ccTotals).map(v=>v.amt), 1);
+  document.getElementById('ccCardSummaryDash').innerHTML = Object.keys(ccTotals).length
+    ? Object.entries(ccTotals).sort((a,b)=>b[1].amt-a[1].amt).map(([card,v])=>{
+        const topCats = Object.entries(v.cats).sort((a,b)=>b[1]-a[1]).slice(0,3)
+          .map(([c,a])=>`<span class="cc-dash-cat">${c} ${fmt(a)}</span>`).join('');
+        const barPct = (v.amt/maxCC*100).toFixed(0);
+        return `<div class="bank-card cc-dash-card">
+          <div class="b-name"><i class="ti ti-credit-card"></i>${card}</div>
+          <div class="b-amt cc">${fmt(v.amt)}</div>
+          <div class="cc-dash-bar-track"><div class="cc-dash-bar-fill" style="width:${barPct}%"></div></div>
+          <div class="b-sub">${v.count} transaction${v.count!==1?'s':''}</div>
+          <div class="cc-dash-cats">${topCats}</div>
+        </div>`;
+      }).join('')
+    : `<div class="empty" style="padding:16px"><i class="ti ti-credit-card-off"></i>No credit card expenses for ${selMeta.label}</div>`;
 }
 
 
