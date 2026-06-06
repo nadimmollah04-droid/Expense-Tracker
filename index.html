@@ -16,6 +16,7 @@
   --expense:#993c1d;--expense-bg:#faece7;--expense-light:#F5C4B3;
   --cc:#3C3489;--cc-bg:#EEEDFE;--cc-light:#AFA9EC;
   --invest:#7A4F1E;--invest-bg:#FEF3E7;--invest-light:#F5C98A;
+  --loan:#1a5db5;--loan-bg:#EEF6FF;--loan-light:#B3D4F7;
   --radius:12px;--radius-sm:8px;--radius-xs:6px;
   --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
 }
@@ -94,12 +95,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .txn-type-pill.income{background:var(--income-bg);color:var(--income)}
 .txn-type-pill.expense{background:var(--expense-bg);color:var(--expense)}
 .txn-type-pill.investment{background:var(--invest-bg);color:var(--invest)}
+.txn-type-pill.loan{background:var(--loan-bg);color:var(--loan)}
+.txn-type-pill.loan_return{background:#e1f5ee;color:#0f6e56}
 .txn-info{flex:1;min-width:0}
 .txn-desc{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
 .txn-meta{font-size:11px;color:var(--text3);margin-top:2px}
 .txn-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
 .txn-amount{font-size:14px;font-weight:600}
 .txn-amount.income{color:var(--income)}.txn-amount.expense{color:var(--expense)}.txn-amount.investment{color:var(--invest)}
+.txn-amount.loan{color:var(--loan)}.txn-amount.loan_return{color:var(--income)}
 .txn-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:4px;border-radius:4px;transition:all 0.15s;line-height:1}
 .txn-del:hover{color:var(--expense);background:var(--expense-bg)}
 .cc-badge{display:inline-flex;align-items:center;gap:3px;background:var(--cc-bg);color:var(--cc);border:1px solid var(--cc-light);border-radius:4px;font-size:10px;font-weight:600;padding:2px 6px;white-space:nowrap}
@@ -108,6 +112,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .bank-badge i{font-size:10px}
 .invest-badge{display:inline-flex;align-items:center;gap:3px;background:var(--invest-bg);color:var(--invest);border:1px solid var(--invest-light);border-radius:4px;font-size:10px;font-weight:600;padding:2px 6px;white-space:nowrap}
 .invest-badge i{font-size:10px}
+.loan-badge{display:inline-flex;align-items:center;gap:3px;background:var(--loan-bg);color:var(--loan);border:1px solid var(--loan-light);border-radius:4px;font-size:10px;font-weight:600;padding:2px 6px;white-space:nowrap}
+.loan-badge i{font-size:10px}
+.loan-return-badge{display:inline-flex;align-items:center;gap:3px;background:#e1f5ee;color:#0f6e56;border:1px solid #9FE1CB;border-radius:4px;font-size:10px;font-weight:600;padding:2px 6px;white-space:nowrap}
+/* LOAN SUMMARY CARD */
+.loan-summary-card{background:var(--loan-bg);border:1px solid var(--loan-light);border-radius:var(--radius-sm);padding:14px 16px;position:relative}
+.loan-summary-card .ls-name{font-size:12px;font-weight:600;color:var(--loan);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.loan-summary-card .ls-amt{font-size:20px;font-weight:600;color:var(--loan)}
+.loan-summary-card .ls-sub{font-size:11px;color:#4a7fc1;margin-top:2px}
+.loan-clear-btn{position:absolute;top:10px;right:10px;background:none;border:1px solid var(--loan-light);border-radius:4px;padding:3px 8px;font-size:11px;font-weight:600;color:var(--loan);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.loan-clear-btn:hover{background:var(--loan);color:#fff}
 .user-badge{display:inline-flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:4px;font-size:10px;font-weight:500;padding:2px 6px;color:var(--text2)}
 /* BANK SUMMARY */
 .bank-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
@@ -345,6 +359,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <button class="nav-btn" onclick="showPage('add',this)"><i class="ti ti-plus"></i> Add Entry</button>
   <button class="nav-btn" onclick="showPage('transactions',this)"><i class="ti ti-list"></i> Transactions</button>
   <button class="nav-btn" onclick="showPage('investments',this)"><i class="ti ti-chart-candle"></i> Investments</button>
+  <button class="nav-btn" onclick="showPage('loans',this)"><i class="ti ti-users"></i> Loans</button>
   <button class="nav-btn" onclick="showPage('trends',this)"><i class="ti ti-chart-bar"></i> Trends</button>
   <button class="nav-btn" onclick="showPage('reconcile',this)"><i class="ti ti-credit-card"></i> CC Reconcile</button>
   <button class="nav-btn" onclick="showPage('settings',this)"><i class="ti ti-settings"></i> Settings</button>
@@ -398,6 +413,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <h3><i class="ti ti-credit-card"></i> Credit Card Expenses</h3>
     <div class="bank-grid" id="ccCardSummaryDash"></div>
   </div>
+
+  <!-- Loan Summary (all-time, not month-filtered) -->
+  <div class="section-label"><i class="ti ti-users"></i> Loans Outstanding</div>
+  <div class="section-card" id="loanSummaryDash">
+    <div class="empty"><i class="ti ti-users"></i>No active loans</div>
+  </div>
 </div>
 
 <!-- ADD ENTRY -->
@@ -406,6 +427,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <button class="tab active" id="tab-exp" onclick="switchAddTab('expense')"><i class="ti ti-minus-circle"></i> Add Expense</button>
     <button class="tab" id="tab-inc" onclick="switchAddTab('income')"><i class="ti ti-plus-circle"></i> Add Income</button>
     <button class="tab" id="tab-inv" onclick="switchAddTab('investment')"><i class="ti ti-chart-candle"></i> Add Investment</button>
+    <button class="tab" id="tab-loan" onclick="switchAddTab('loan')"><i class="ti ti-users"></i> Loan Given</button>
+    <button class="tab" id="tab-loan-return" onclick="switchAddTab('loan_return')"><i class="ti ti-arrow-back-up"></i> Loan Return</button>
   </div>
 
   <div id="add-expense-form" class="section-card">
@@ -536,6 +559,80 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
     <button class="submit-btn btn-invest" onclick="addTransaction('investment')"><i class="ti ti-plus"></i> Add Investment</button>
   </div>
+
+  <!-- LOAN GIVEN FORM -->
+  <div id="add-loan-form" class="section-card" style="display:none">
+    <div style="background:var(--loan-bg);border:1px solid var(--loan-light);border-radius:var(--radius-xs);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--loan);font-weight:500">
+      <i class="ti ti-info-circle"></i> Recording a loan will reduce your available balance. When they repay, use "Loan Return" to add it back.
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Date</label><input type="date" id="loan-date"></div>
+      <div class="field"><label>Amount (₹)</label><input type="number" id="loan-amount" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Given To (Name)</label><input type="text" id="loan-person" placeholder="e.g. Rahul, Cousin Priya..."></div>
+      <div class="field"><label>Relation</label>
+        <select id="loan-relation">
+          <option value="Friend">Friend</option>
+          <option value="Relative">Relative</option>
+          <option value="Colleague">Colleague</option>
+          <option value="Family">Family</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Payment Mode</label>
+        <select id="loan-mode" onchange="toggleLoanCCPanel()">
+          <option value="Cash">Cash</option>
+          <option value="UPI">UPI</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Credit Card">Credit Card 💳</option>
+        </select>
+      </div>
+      <div class="field"><label>Notes (optional)</label><input type="text" id="loan-notes" placeholder="Purpose, expected return date..."></div>
+    </div>
+    <div class="cc-info-box" id="loan-cc-panel">
+      <label><i class="ti ti-credit-card"></i> Select Credit Card</label>
+      <select id="loan-cc-card">
+        <option value="">Select card</option>
+        <option>HSBC Credit Card</option><option>AMEX Credit Card</option>
+        <option>ICICI Credit Card</option><option>Axis Credit Card</option>
+        <option>HDFC Credit Card</option><option>SBI Card</option><option>Other Credit Card</option>
+      </select>
+    </div>
+    <button class="submit-btn" style="background:var(--loan);color:#fff" onclick="addTransaction('loan')"><i class="ti ti-arrow-up-right"></i> Record Loan Given</button>
+  </div>
+
+  <!-- LOAN RETURN FORM -->
+  <div id="add-loan-return-form" class="section-card" style="display:none">
+    <div style="background:#e1f5ee;border:1px solid #9FE1CB;border-radius:var(--radius-xs);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--income);font-weight:500">
+      <i class="ti ti-info-circle"></i> Recording a loan return will add back to your available balance.
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Date</label><input type="date" id="loanret-date"></div>
+      <div class="field"><label>Amount Returned (₹)</label><input type="number" id="loanret-amount" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Returned By (Name)</label>
+        <select id="loanret-person">
+          <option value="">Select borrower...</option>
+        </select>
+      </div>
+      <div class="field"><label>Or type name</label><input type="text" id="loanret-person-custom" placeholder="If not in list..."></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Received Via</label>
+        <select id="loanret-mode">
+          <option value="Cash">Cash</option>
+          <option value="UPI">UPI</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+        </select>
+      </div>
+      <div class="field"><label>Notes (optional)</label><input type="text" id="loanret-notes" placeholder="Any notes..."></div>
+    </div>
+    <button class="submit-btn" style="background:var(--income);color:#fff" onclick="addTransaction('loan_return')"><i class="ti ti-arrow-back-up"></i> Record Loan Return</button>
+  </div>
 </div>
 
 <!-- TRANSACTIONS -->
@@ -547,11 +644,39 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <option value="income">Income only</option>
       <option value="expense">Expense only</option>
       <option value="investment">Investments only</option>
+      <option value="loan">Loans given</option>
+      <option value="loan_return">Loan returns</option>
     </select>
     <select id="filter-month" onchange="renderTransactions()"><option value="">All months</option></select>
     <select id="filter-cat" onchange="renderTransactions()"><option value="">All categories</option></select>
   </div>
   <div class="txn-list" id="allTxns"></div>
+</div>
+
+<!-- LOANS PAGE -->
+<div id="page-loans" class="page">
+  <div style="background:var(--loan-bg);border:1px solid var(--loan-light);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px">
+    <h3 style="font-size:12px;font-weight:600;color:var(--loan);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="ti ti-users"></i> Loans Tracker</h3>
+    <div style="display:flex;gap:24px;flex-wrap:wrap">
+      <div><div style="font-size:36px;font-weight:600;color:var(--loan);letter-spacing:-1px" id="loanTotalOutstanding">₹0</div><div style="font-size:12px;color:#4a7fc1;margin-top:4px">Total Outstanding</div></div>
+      <div><div style="font-size:36px;font-weight:600;color:var(--income);letter-spacing:-1px" id="loanTotalReturned">₹0</div><div style="font-size:12px;color:#4a7fc1;margin-top:4px">Total Returned</div></div>
+    </div>
+  </div>
+  <div class="section-card">
+    <h3><i class="ti ti-users"></i> Active Loans by Person</h3>
+    <div id="loanByPerson"></div>
+  </div>
+  <div class="section-card">
+    <h3><i class="ti ti-list"></i> Loan Transactions</h3>
+    <div class="filter-bar" style="margin-bottom:14px">
+      <select id="loan-filter-type" onchange="renderLoans()">
+        <option value="">All loan transactions</option>
+        <option value="loan">Loans given only</option>
+        <option value="loan_return">Returns only</option>
+      </select>
+    </div>
+    <div class="txn-list" id="loanTxns"></div>
+  </div>
 </div>
 
 <!-- TRENDS -->
@@ -816,6 +941,7 @@ let state = {
   dashboardMonth: null,   // null = current month
   ccCards: [],
   ccPayments: [],
+  loans: [],        // {id, person, relation, totalGiven, totalReturned, cleared, date}
   config: {sheetId:'',scriptUrl:''}
 };
 
@@ -862,6 +988,7 @@ function saveState(){
       dashboardMonth: state.dashboardMonth,
       ccCards: state.ccCards,
       ccPayments: state.ccPayments,
+      loans: state.loans,
       config: state.config
     };
     if(!connected) toSave.transactions = state.transactions;
@@ -995,6 +1122,8 @@ function computeRunningBalance(userId){
     if(t.type==='income') balance += t.amount;
     else if(t.type==='expense') balance -= t.amount;
     else if(t.type==='investment') balance -= t.amount;
+    else if(t.type==='loan') balance -= t.amount;          // loan given reduces balance
+    else if(t.type==='loan_return') balance += t.amount;   // loan return adds back
   });
   return balance;
 }
@@ -1037,6 +1166,9 @@ function renderDashboard(){
   const allIncome  = allTxns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
   const allExpense = allTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
   const allInvest  = allTxns.filter(t=>t.type==='investment').reduce((s,t)=>s+t.amount,0);
+  const allLoansGiven = allTxns.filter(t=>t.type==='loan').reduce((s,t)=>s+t.amount,0);
+  const allLoansReturned = allTxns.filter(t=>t.type==='loan_return').reduce((s,t)=>s+t.amount,0);
+  const loanOutstanding = allLoansGiven - allLoansReturned;
   const balColor   = runBal >= 0 ? '#4ADE80' : '#F87171';
   document.getElementById('balanceHero').innerHTML = `
     <div class="balance-hero-left">
@@ -1048,6 +1180,8 @@ function renderDashboard(){
       <div class="bal-row"><span class="bal-row-label">+ Total Income</span><span class="bal-row-val" style="color:#4ADE80">${fmt(allIncome)}</span></div>
       <div class="bal-row"><span class="bal-row-label">− Total Expense</span><span class="bal-row-val" style="color:#F87171">${fmt(allExpense)}</span></div>
       <div class="bal-row"><span class="bal-row-label">− Invested</span><span class="bal-row-val" style="color:#FCD34D">${fmt(allInvest)}</span></div>
+      ${allLoansGiven>0?`<div class="bal-row"><span class="bal-row-label">↗ Loans Given</span><span class="bal-row-val" style="color:#93C5FD">${fmt(allLoansGiven)}</span></div>`:''}
+      ${allLoansReturned>0?`<div class="bal-row"><span class="bal-row-label">↙ Loans Returned</span><span class="bal-row-val" style="color:#4ADE80">${fmt(allLoansReturned)}</span></div>`:''}
       <div class="bal-divider"></div>
       <div class="bal-row"><span class="bal-row-label">= Balance</span><span class="bal-row-val" style="color:${balColor}">${fmt(runBal)}</span></div>
     </div>`;
@@ -1196,6 +1330,9 @@ function renderDashboard(){
         </div>`;
       }).join('')
     : `<div class="empty" style="padding:16px"><i class="ti ti-credit-card-off"></i>No credit card expenses for ${selMeta.label}</div>`;
+
+  // ── Loan Summary (all-time, not month filtered) ──
+  renderLoanSummaryDash(allTxns);
 }
 
 
@@ -1207,18 +1344,27 @@ function txnHTML(t){
     ? `<span class="bank-badge"><i class="ti ti-building-bank"></i>${t.upi_bank}</span>` : '';
   const investBadge = t.type==='investment' && t.invest_sector
     ? `<span class="invest-badge"><i class="ti ti-chart-candle"></i>${t.invest_sector}</span>` : '';
+  const loanBadge = t.type==='loan'
+    ? `<span class="loan-badge"><i class="ti ti-arrow-up-right"></i>Loan → ${t.loan_person||t.source||'?'}</span>` : '';
+  const loanRetBadge = t.type==='loan_return'
+    ? `<span class="loan-return-badge"><i class="ti ti-arrow-back-up"></i>Return ← ${t.loan_person||t.source||'?'}</span>` : '';
   const userBadge = state.users.length > 1
     ? `<span class="user-badge">${u.name}</span>` : '';
-  const typeIcon = t.type==='income' ? 'arrow-down-left' : t.type==='investment' ? 'chart-candle' : 'arrow-up-right';
-  const amtPrefix = t.type==='income' ? '+' : t.type==='investment' ? '▼' : '-';
+  const typeIcon = t.type==='income' ? 'arrow-down-left'
+    : t.type==='investment' ? 'chart-candle'
+    : t.type==='loan' ? 'arrow-up-right'
+    : t.type==='loan_return' ? 'arrow-back-up'
+    : 'arrow-up-right';
+  const amtPrefix = t.type==='income'||t.type==='loan_return' ? '+' : t.type==='investment' ? '▼' : '-';
+  const pillClass = t.type==='loan_return' ? 'loan_return' : t.type==='loan' ? 'loan' : t.type;
   return `<div class="txn-item">
-    <div class="txn-type-pill ${t.type}"><i class="ti ti-${typeIcon}"></i></div>
+    <div class="txn-type-pill ${pillClass}"><i class="ti ti-${typeIcon}"></i></div>
     <div class="txn-info">
-      <div class="txn-desc">${t.description||t.category} ${ccBadge}${bankBadge}${investBadge} ${userBadge}</div>
+      <div class="txn-desc">${t.description||t.category} ${ccBadge}${bankBadge}${investBadge}${loanBadge}${loanRetBadge} ${userBadge}</div>
       <div class="txn-meta">${t.date} &middot; ${t.category}${t.source?' &middot; '+t.source:''} &middot; ${t.payment_mode}</div>
     </div>
     <div class="txn-right">
-      <div class="txn-amount ${t.type}">${amtPrefix}${fmt(t.amount)}</div>
+      <div class="txn-amount ${pillClass}">${amtPrefix}${fmt(t.amount)}</div>
       <button class="txn-del" onclick="deleteTxn('${t.id}')" title="Delete"><i class="ti ti-trash"></i></button>
     </div>
   </div>`;
@@ -1803,11 +1949,150 @@ function renderTrends(){
   })();
 }
 
+function getLoansByPerson(txns){
+  // Returns map of person -> {given, returned, txns}
+  const byPerson = {};
+  txns.filter(t=>t.type==='loan'||t.type==='loan_return').forEach(t=>{
+    const person = t.loan_person || t.source || 'Unknown';
+    if(!byPerson[person]) byPerson[person] = {given:0, returned:0, txns:[], relation:t.loan_relation||''};
+    if(t.type==='loan') byPerson[person].given += t.amount;
+    else byPerson[person].returned += t.amount;
+    byPerson[person].txns.push(t);
+    if(t.loan_relation) byPerson[person].relation = t.loan_relation;
+  });
+  return byPerson;
+}
+
+function renderLoanSummaryDash(allTxns){
+  const byPerson = getLoansByPerson(allTxns);
+  const active = Object.entries(byPerson).filter(([,v])=>v.given > v.returned);
+  const el = document.getElementById('loanSummaryDash');
+  if(!el) return;
+  if(!active.length){
+    el.innerHTML = '<div class="empty" style="padding:16px"><i class="ti ti-users"></i>No active loans outstanding</div>';
+    return;
+  }
+  el.innerHTML = `<div class="bank-grid">${active.sort((a,b)=>(b[1].given-b[1].returned)-(a[1].given-a[1].returned)).map(([person,v])=>{
+    const outstanding = v.given - v.returned;
+    return `<div class="loan-summary-card">
+      <button class="loan-clear-btn" onclick="clearLoan('${person}')" title="Mark as fully cleared">✓ Clear</button>
+      <div class="ls-name"><i class="ti ti-user"></i>${person}${v.relation?' <span style="font-size:10px;opacity:0.7">(${v.relation})</span>':''}</div>
+      <div class="ls-amt">${fmt(outstanding)}</div>
+      <div class="ls-sub">Given: ${fmt(v.given)} · Returned: ${fmt(v.returned)}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderLoans(){
+  const uid = state.activeUser;
+  const allTxns = state.transactions.filter(t=>t.user===uid);
+  const loanTxns = allTxns.filter(t=>t.type==='loan'||t.type==='loan_return');
+
+  const totalGiven = loanTxns.filter(t=>t.type==='loan').reduce((s,t)=>s+t.amount,0);
+  const totalReturned = loanTxns.filter(t=>t.type==='loan_return').reduce((s,t)=>s+t.amount,0);
+
+  const ogEl = document.getElementById('loanTotalOutstanding');
+  const retEl = document.getElementById('loanTotalReturned');
+  if(ogEl) ogEl.textContent = fmt(totalGiven - totalReturned);
+  if(retEl) retEl.textContent = fmt(totalReturned);
+
+  // By person summary
+  const byPerson = getLoansByPerson(loanTxns);
+  const personEl = document.getElementById('loanByPerson');
+  if(personEl){
+    if(!Object.keys(byPerson).length){
+      personEl.innerHTML = '<div class="empty"><i class="ti ti-users"></i>No loan transactions yet</div>';
+    } else {
+      personEl.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px">${
+        Object.entries(byPerson).sort((a,b)=>(b[1].given-b[1].returned)-(a[1].given-a[1].returned)).map(([person,v])=>{
+          const outstanding = v.given - v.returned;
+          const pct = v.given > 0 ? Math.min(100, (v.returned/v.given)*100).toFixed(0) : 100;
+          const isCleared = outstanding <= 0;
+          return `<div style="padding:12px 14px;background:${isCleared?'var(--surface2)':'var(--loan-bg)'};border:1px solid ${isCleared?'var(--border)':'var(--loan-light)'};border-radius:var(--radius-sm)">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+              <div>
+                <span style="font-size:14px;font-weight:600;color:${isCleared?'var(--text2)':'var(--loan)'}">${person}</span>
+                ${v.relation?`<span style="font-size:11px;color:var(--text3);margin-left:6px">${v.relation}</span>`:''}
+                ${isCleared?'<span style="font-size:11px;font-weight:600;color:var(--income);margin-left:8px">✓ Cleared</span>':''}
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:16px;font-weight:600;color:${isCleared?'var(--income)':'var(--loan)'}">${fmt(outstanding)}</div>
+                <div style="font-size:11px;color:var(--text3)">outstanding</div>
+              </div>
+            </div>
+            <div style="height:5px;background:var(--border);border-radius:3px;margin-bottom:6px">
+              <div style="height:5px;background:${isCleared?'var(--income)':'var(--loan)'};border-radius:3px;width:${pct}%;transition:width 0.4s"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2)">
+              <span>Given: <strong>${fmt(v.given)}</strong></span>
+              <span>Returned: <strong style="color:var(--income)">${fmt(v.returned)}</strong></span>
+              <span>${pct}% repaid</span>
+            </div>
+            ${!isCleared?`<button onclick="clearLoan('${person}')" style="margin-top:10px;padding:6px 14px;background:var(--income);color:#fff;border:none;border-radius:var(--radius-xs);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif"><i class="ti ti-check"></i> Mark as Cleared</button>`:''}
+          </div>`;
+        }).join('')
+      }</div>`;
+    }
+  }
+
+  // Loan transactions list
+  const fType = document.getElementById('loan-filter-type')?.value || '';
+  let filtered = loanTxns.sort((a,b)=>b.timestamp-a.timestamp);
+  if(fType) filtered = filtered.filter(t=>t.type===fType);
+  const listEl = document.getElementById('loanTxns');
+  if(listEl) listEl.innerHTML = filtered.length ? filtered.map(t=>txnHTML(t)).join('') : '<div class="empty"><i class="ti ti-users"></i>No loan transactions found</div>';
+
+  // Update loanret-person dropdown
+  const lrpEl = document.getElementById('loanret-person');
+  if(lrpEl){
+    const activePersons = Object.entries(byPerson).filter(([,v])=>v.given>v.returned).map(([p])=>p);
+    lrpEl.innerHTML = '<option value="">Select borrower...</option>' + activePersons.map(p=>`<option value="${p}">${p}</option>`).join('');
+  }
+}
+
+function clearLoan(person){
+  if(!confirm(`Mark all loans from ${person} as cleared? This records a return entry for the outstanding balance.`)) return;
+  const uid = state.activeUser;
+  const allTxns = state.transactions.filter(t=>t.user===uid);
+  const byPerson = getLoansByPerson(allTxns);
+  const v = byPerson[person];
+  if(!v) return;
+  const outstanding = v.given - v.returned;
+  if(outstanding <= 0){ showToast('Already fully cleared!'); return; }
+  // Record a return transaction for the outstanding balance
+  const t = {
+    id: uid(), type: 'loan_return',
+    category: 'Loan Return',
+    source: person,
+    description: `Loan cleared by ${person}`,
+    amount: outstanding,
+    payment_mode: 'Cash',
+    credit_card: '', upi_bank: '', invest_sector: '', invest_platform: '',
+    loan_person: person,
+    loan_relation: v.relation || '',
+    user: state.activeUser,
+    notes: 'Marked as cleared',
+    date: localDateStr(),
+    timestamp: Date.now()
+  };
+  state.transactions.push(t);
+  saveState();
+  renderAll();
+  showToast(`${person}'s loan marked as cleared!`);
+}
+
+function toggleLoanCCPanel(){
+  const mode = document.getElementById('loan-mode').value;
+  const panel = document.getElementById('loan-cc-panel');
+  if(panel) panel.style.display = mode==='Credit Card' ? 'block' : 'none';
+}
+
 function renderAll(){
   renderUserBar();
   renderDashboard();
   renderTransactions();
   renderInvestments();
+  renderLoans();
   renderTrends();
   renderReconcile();
   renderUserSettings();
@@ -1820,6 +2105,7 @@ function showPage(id, btn){
   if(btn) btn.classList.add('active');
   if(id==='transactions') renderTransactions();
   if(id==='investments') renderInvestments();
+  if(id==='loans'){ renderLoans(); }
   if(id==='trends') renderTrends();
   if(id==='reconcile') renderReconcile();
   if(id==='settings') renderUserSettings();
@@ -1829,9 +2115,15 @@ function switchAddTab(tab){
   document.getElementById('add-expense-form').style.display = tab==='expense'?'block':'none';
   document.getElementById('add-income-form').style.display = tab==='income'?'block':'none';
   document.getElementById('add-investment-form').style.display = tab==='investment'?'block':'none';
+  document.getElementById('add-loan-form').style.display = tab==='loan'?'block':'none';
+  document.getElementById('add-loan-return-form').style.display = tab==='loan_return'?'block':'none';
   document.getElementById('tab-exp').classList.toggle('active', tab==='expense');
   document.getElementById('tab-inc').classList.toggle('active', tab==='income');
   document.getElementById('tab-inv').classList.toggle('active', tab==='investment');
+  document.getElementById('tab-loan').classList.toggle('active', tab==='loan');
+  document.getElementById('tab-loan-return').classList.toggle('active', tab==='loan_return');
+  // Refresh borrower dropdown when switching to loan_return
+  if(tab==='loan_return') renderLoans();
 }
 
 function toggleCCPanel(){
@@ -1917,6 +2209,59 @@ function addTransaction(type){
     document.getElementById('inv-sector').value='';
     document.getElementById('inv-bank').value='';
     showToast('Investment recorded successfully!');
+  } else if(type==='loan'){
+    const amount = parseFloat(document.getElementById('loan-amount').value);
+    const person = document.getElementById('loan-person').value.trim();
+    if(!amount || !person){ showToast('Please fill in amount and person name'); return; }
+    const mode = document.getElementById('loan-mode').value;
+    const t = {
+      id: uid(), type: 'loan',
+      category: 'Loan Given',
+      source: person,
+      description: `Loan given to ${person}`,
+      amount: amount,
+      payment_mode: mode,
+      credit_card: mode==='Credit Card' ? (document.getElementById('loan-cc-card').value||'') : '',
+      upi_bank: '', invest_sector: '', invest_platform: '',
+      loan_person: person,
+      loan_relation: document.getElementById('loan-relation').value,
+      user: state.activeUser,
+      notes: document.getElementById('loan-notes').value,
+      date: document.getElementById('loan-date').value || localDateStr(),
+      timestamp: Date.now()
+    };
+    state.transactions.push(t);
+    saveState(); pushToSheet(t);
+    ['loan-amount','loan-person','loan-notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('loan-mode').value='Cash';
+    document.getElementById('loan-cc-panel').style.display='none';
+    showToast(`Loan of ${fmt(amount)} given to ${person} recorded!`);
+  } else if(type==='loan_return'){
+    const amount = parseFloat(document.getElementById('loanret-amount').value);
+    const personSel = document.getElementById('loanret-person').value;
+    const personCustom = document.getElementById('loanret-person-custom').value.trim();
+    const person = personCustom || personSel;
+    if(!amount || !person){ showToast('Please fill in amount and person name'); return; }
+    const t = {
+      id: uid(), type: 'loan_return',
+      category: 'Loan Return',
+      source: person,
+      description: `Loan returned by ${person}`,
+      amount: amount,
+      payment_mode: document.getElementById('loanret-mode').value,
+      credit_card: '', upi_bank: '', invest_sector: '', invest_platform: '',
+      loan_person: person,
+      loan_relation: '',
+      user: state.activeUser,
+      notes: document.getElementById('loanret-notes').value,
+      date: document.getElementById('loanret-date').value || localDateStr(),
+      timestamp: Date.now()
+    };
+    state.transactions.push(t);
+    saveState(); pushToSheet(t);
+    ['loanret-amount','loanret-person-custom','loanret-notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('loanret-person').value='';
+    showToast(`Loan return of ${fmt(amount)} from ${person} recorded!`);
   }
   renderAll();
   showPage('dashboard');
@@ -2112,6 +2457,8 @@ const today = localDateStr();
 document.getElementById('exp-date').value = today;
 document.getElementById('inc-date').value = today;
 document.getElementById('inv-date').value = today;
+document.getElementById('loan-date').value = today;
+document.getElementById('loanret-date').value = today;
 
 loadState();
 // If sheet connected, sync first — otherwise render local data immediately
