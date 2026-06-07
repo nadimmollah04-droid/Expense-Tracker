@@ -1535,7 +1535,9 @@ function renderReconcile(){
     // Past periods — find unpaid ones that have transactions
     const pastPeriods = getPastStatementPeriods(stmtDay, 12);
     const unpaidPastPeriods = pastPeriods.filter(p=>{
-      const paid = paidPeriods.has(`${cardId}::${p.periodKey}`);
+      // Consider paid if settled via full-cycle OR pre-statement settle
+      const paid = paidPeriods.has(`${cardId}::${p.periodKey}`)
+                || paidPeriods.has(`${cardId}::prestmt::${p.periodKey}`);
       const txns = ccTxns.filter(t=>t.credit_card===cardName && t.date>=p.start && t.date<=p.end);
       return !paid && txns.length > 0;
     });
@@ -1671,7 +1673,7 @@ function renderReconcile(){
 
         ${preStmtHTML}
 
-        <div class="cc-stmt-actions" style="margin-top:${unpaidPastPeriods.length?'12px':'0'}">
+        <div class="cc-stmt-actions" style="margin-top:${(unpaidPastPeriods.length||preStmtTxns.length)?'12px':'0'}">
           ${isCurPaid
             ? `<button class="pay-btn" disabled style="opacity:0.45;cursor:default">
                 <i class="ti ti-check"></i> Current Bill Paid
@@ -1684,13 +1686,6 @@ function renderReconcile(){
                 <i class="ti ti-credit-card"></i> Pay Full Cycle Bill — ${fmt(curTotal)}
                </button>`}
           ${paidHistory.length?`<button class="history-btn" onclick="toggleHistory('hist-${cardId}')"><i class="ti ti-history"></i> History (${paidHistory.length})</button>`:''}
-        </div>
-
-        <div class="stmt-period-label">Current period transactions (${curTxns.length})</div>
-        <div class="txn-list" style="margin-bottom:8px">
-          ${curTxns.length
-            ? [...curTxns].sort((a,b)=>b.date.localeCompare(a.date)).map(t=>txnHTML(t)).join('')
-            : `<div class="empty" style="padding:12px"><i class="ti ti-receipt-off"></i>No transactions this period</div>`}
         </div>
 
         ${paidHistHTML}
@@ -1708,8 +1703,9 @@ function renderReconcile(){
     const stmtDay = cfg?cfg.stmtDay:1;
     const cardId = cfg?cfg.id:cardName;
     return s + getPastStatementPeriods(stmtDay,12).filter(p=>{
-      return !paidPeriods.has(`${cardId}::${p.periodKey}`) &&
-             ccTxns.filter(t=>t.credit_card===cardName&&t.date>=p.start&&t.date<=p.end).length>0;
+      return !paidPeriods.has(`${cardId}::${p.periodKey}`)
+          && !paidPeriods.has(`${cardId}::prestmt::${p.periodKey}`)
+          && ccTxns.filter(t=>t.credit_card===cardName&&t.date>=p.start&&t.date<=p.end).length>0;
     }).length;
   },0);
   document.getElementById('ccCount').textContent =
