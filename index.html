@@ -28,7 +28,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .topbar-left{display:flex;align-items:center;gap:10px}
 .logo-icon{width:32px;height:32px;background:var(--text);border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
 .topbar h1{font-size:16px;font-weight:600;letter-spacing:-0.3px}
-.user-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.user-bar{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;overflow-x:auto;max-width:60vw;-webkit-overflow-scrolling:touch}
 .user-chip{display:flex;align-items:center;gap:6px;padding:5px 12px 5px 6px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-size:13px;font-weight:500;transition:all 0.15s;white-space:nowrap}
 .user-chip:hover{border-color:var(--border2)}
 .user-chip.active{background:var(--text);border-color:var(--text);color:#fff}
@@ -263,9 +263,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* MONTH PICKER */
-.month-picker-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.month-picker-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;overflow:hidden}
 .month-picker-row .mp-label{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;white-space:nowrap}
-.month-tabs{display:flex;gap:4px;flex-wrap:wrap;flex:1}
+.month-tabs{display:flex;gap:4px;flex-wrap:nowrap;flex:1;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;scrollbar-width:none}
+.month-tabs::-webkit-scrollbar{display:none}
 .month-tab{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text2);transition:all 0.15s;white-space:nowrap}
 .month-tab:hover{border-color:var(--border2);color:var(--text)}
 .month-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
@@ -349,15 +350,140 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .cat-mini-bar{flex:1;border-radius:3px 3px 0 0;min-height:3px;transition:height 0.3s}
 .cat-trend-amt{font-size:12px;color:var(--text2);width:70px;text-align:right;flex-shrink:0}
 
+.month-tab.is-current::after{content:'●';font-size:6px;vertical-align:middle;margin-left:4px;opacity:0.5}
+
 @media(max-width:600px){
-  .content{padding:16px}
+  /* ── LAYOUT ── */
+  .content{padding:12px}
   .two-col{grid-template-columns:1fr}
+
+  /* ── TOPBAR ── */
+  .topbar{padding:0 12px;height:50px}
+  .topbar h1{font-size:13px}
+  .logo-icon{width:28px;height:28px;font-size:14px}
+  #syncStatus{display:none!important}
+  /* Hide user chips label text, show only avatar on mobile */
+  .user-chip{padding:4px 8px 4px 4px;font-size:12px;gap:4px}
+
+  /* ── NAV ── */
+  .nav{padding:0 8px;-webkit-overflow-scrolling:touch}
+  .nav-btn{padding:10px 10px;font-size:12px;gap:4px}
+  .nav-btn i{font-size:13px}
+
+  /* ── DASHBOARD BALANCE HERO ── */
+  .balance-hero{flex-direction:column;gap:12px;padding:16px}
+  .balance-amount{font-size:32px}
+  .balance-hero-right{min-width:unset;width:100%;border-top:1px solid rgba(255,255,255,0.15);padding-top:12px}
+
+  /* ── METRIC CARDS ── */
+  .cards-row{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+  .metric-card{padding:12px}
+  .metric-card .m-value{font-size:20px}
+  .metric-card .m-label{font-size:11px}
+
+  /* ── ALL-TIME CARDS ── */
+  .alltime-row{grid-template-columns:1fr 1fr;gap:8px}
+  .alltime-card{padding:10px 12px}
+  .alltime-card .at-val{font-size:15px}
+
+  /* ── SECTION CARDS ── */
+  .section-card{padding:14px;margin-bottom:12px}
+  .section-card h3{font-size:12px;margin-bottom:10px}
+
+  /* ── FORMS ── */
+  .tab-row{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:1px}
+  .tab{padding:8px 12px;font-size:12px;gap:4px;white-space:nowrap}
   .form-grid{grid-template-columns:1fr}
   .form-grid.three{grid-template-columns:1fr 1fr}
-  .cards-row{grid-template-columns:1fr 1fr}
-  .topbar{padding:0 16px}
-  .topbar h1{font-size:14px}
-  .mom-grid{grid-template-columns:1fr 1fr}
+  .field input,.field select,.field textarea{font-size:16px}/* prevents iOS zoom */
+  .submit-btn{font-size:13px;padding:12px}
+
+  /* ── TRANSACTIONS ── */
+  .filter-bar{gap:6px}
+  .filter-bar select{font-size:12px;padding:6px 8px;flex:1}
+  .txn-item{padding:10px 10px;gap:8px}
+  .txn-type-pill{width:28px;height:28px;font-size:13px}
+  .txn-desc{font-size:12px;gap:4px;flex-wrap:wrap}
+  .txn-meta{font-size:10px}
+  .txn-amount{font-size:13px}
+  /* Hide badges on very small screens to prevent overflow */
+  .cc-badge,.bank-badge,.invest-badge,.loan-badge,.loan-return-badge{font-size:9px;padding:1px 5px}
+
+  /* ── BANK / CC GRID ── */
+  .bank-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .bank-card{padding:10px 12px}
+  .bank-card .b-amt{font-size:16px}
+  .bank-card .b-name{font-size:10px}
+
+  /* ── INVEST PAGE ── */
+  .invest-hero{padding:16px}
+  .invest-hero .i-total{font-size:28px}
+  .invest-sector-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .invest-sector-card{padding:10px 12px}
+  .invest-sector-card .is-amt{font-size:17px}
+
+  /* ── CC RECONCILE ── */
+  .recon-hero{padding:16px}
+  .recon-total{font-size:28px}
+  .cc-cards-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .cc-card{padding:10px 12px}
+  .cc-card .cc-card-amt{font-size:17px}
+  .cc-statement-card{border-radius:var(--radius-sm)}
+  .cc-stmt-header{padding:12px 14px;gap:8px;flex-wrap:wrap}
+  .cc-stmt-header-left{gap:8px}
+  .cc-stmt-icon{width:32px;height:32px;font-size:14px}
+  .cc-stmt-name{font-size:13px}
+  .cc-stmt-amount{font-size:20px}
+  .cc-stmt-body{padding:10px 12px}
+  .cc-stmt-actions{flex-direction:column;gap:6px}
+  .pay-btn,.history-btn{width:100%;justify-content:center;padding:10px 14px}
+  .cc-config-row{grid-template-columns:1fr 70px 70px 30px;gap:6px}
+  .cc-config-row input[type=number]{padding:5px 6px;font-size:12px}
+  .add-card-row{flex-direction:column;gap:6px}
+  .add-card-row select,.add-card-row input,.add-card-row button{width:100%}
+
+  /* ── LOANS PAGE ── */
+  .loan-summary-card{padding:12px 14px}
+  .loan-summary-card .ls-amt{font-size:17px}
+
+  /* ── TRENDS ── */
+  .mom-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .mom-card{padding:10px 12px}
+  .mom-card .mc-val{font-size:17px}
+  .trend-month-tabs{gap:4px}
+  .trend-month-tab{padding:5px 10px;font-size:11px}
+  .cat-lbl{width:80px;font-size:11px}
+  .cat-val{width:60px;font-size:11px}
+  .cat-trend-name{width:80px;font-size:12px}
+  .cat-trend-amt{width:55px;font-size:11px}
+
+  /* ── DRILL MODAL ── */
+  .drill-sheet{max-height:90vh;border-radius:16px 16px 0 0}
+  .drill-header{padding:12px 14px 10px}
+  .drill-title{font-size:13px}
+  .drill-summary{gap:14px;padding:10px 14px}
+  .drill-sum-val{font-size:16px}
+  .drill-body{padding:10px 14px}
+
+  /* ── SETTINGS ── */
+  .export-row{flex-direction:column;gap:6px}
+  .export-btn{flex:none}
+  .ob-input{width:100px;font-size:12px}
+  .conn-row{flex-wrap:wrap}
+
+  /* ── GENERAL ── */
+  .section-label{font-size:10px}
+  .empty{padding:28px 16px;font-size:12px}
+}
+
+/* Extra small phones */
+@media(max-width:380px){
+  .cards-row{grid-template-columns:1fr 1fr;gap:6px}
+  .metric-card .m-value{font-size:17px}
+  .nav-btn span,.nav-btn{font-size:11px}
+  .bank-grid{grid-template-columns:1fr}
+  .alltime-row{grid-template-columns:1fr 1fr}
+  .balance-amount{font-size:28px}
 }
 </style>
 </head>
