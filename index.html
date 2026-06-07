@@ -1602,6 +1602,43 @@ function renderReconcile(){
         </div>
       </div>` : '';
 
+    const today = localDateStr();
+
+    // Split current period into: already-spent (up to today) vs future
+    const preStmtTxns  = curTxns.filter(t => t.date <= today);
+    const preStmtTotal = preStmtTxns.reduce((s,t)=>s+t.amount,0);
+    const isPreStmtPaidKey = `${cardId}::prestmt::${curPeriod.periodKey}`;
+    const isPreStmtPaid = (state.ccPayments||[]).some(p=>p.periodKey===isPreStmtPaidKey);
+
+    // Pre-statement settle section (only show if there are spends today or before, and bill not yet generated)
+    const preStmtHTML = (preStmtTxns.length > 0 && !isCurPaid) ? `
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <div>
+            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--text3);margin-bottom:3px">
+              <i class="ti ti-clock-bolt"></i> Pre-Statement Spends (Bill Not Yet Generated)
+            </div>
+            <div style="font-size:11px;color:var(--text3)">Transactions up to today · Statement closes ${curPeriod.end}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:18px;font-weight:600;color:var(--cc)">${fmt(preStmtTotal)}</span>
+            ${isPreStmtPaid
+              ? `<span class="due-badge paid"><i class="ti ti-check"></i> Pre-settled</span>
+                 <button class="history-btn" style="font-size:12px;padding:5px 10px;color:var(--expense);border-color:var(--expense-light)"
+                   onclick="unpayBill('${cardId}','${cardName}','${isPreStmtPaidKey}')">
+                   <i class="ti ti-rotate-clockwise-2"></i> Undo
+                 </button>`
+              : `<button class="pay-btn" style="padding:6px 14px;font-size:12px"
+                   onclick="payBill('${cardId}','${cardName}','${isPreStmtPaidKey}',${preStmtTotal})">
+                   <i class="ti ti-credit-card"></i> Settle Now — ${fmt(preStmtTotal)}
+                 </button>`}
+          </div>
+        </div>
+        <div class="txn-list">
+          ${preStmtTxns.sort((a,b)=>b.date.localeCompare(a.date)).map(t=>txnHTML(t)).join('')}
+        </div>
+      </div>` : '';
+
     return `
     <div class="cc-statement-card">
       <div class="cc-stmt-header">
@@ -1632,12 +1669,20 @@ function renderReconcile(){
 
         ${unpaidPastHTML}
 
+        ${preStmtHTML}
+
         <div class="cc-stmt-actions" style="margin-top:${unpaidPastPeriods.length?'12px':'0'}">
-          <button class="pay-btn" onclick="payBill('${cardId}','${cardName}','${curPeriod.periodKey}',${curTotal})"
-            ${isCurPaid||curTotal===0?'disabled':''}>
-            <i class="ti ti-${isCurPaid?'check':'credit-card'}"></i>
-            ${isCurPaid?'Current Bill Paid':'Pay Current Bill — '+fmt(curTotal)}
-          </button>
+          ${isCurPaid
+            ? `<button class="pay-btn" disabled style="opacity:0.45;cursor:default">
+                <i class="ti ti-check"></i> Current Bill Paid
+               </button>
+               <button class="history-btn" onclick="unpayBill('${cardId}','${cardName}','${curPeriod.periodKey}')" title="Undo payment for this cycle" style="color:var(--expense);border-color:var(--expense-light)">
+                <i class="ti ti-rotate-clockwise-2"></i> Undo Payment
+               </button>`
+            : `<button class="pay-btn" onclick="payBill('${cardId}','${cardName}','${curPeriod.periodKey}',${curTotal})"
+                ${curTotal===0?'disabled':''}>
+                <i class="ti ti-credit-card"></i> Pay Full Cycle Bill — ${fmt(curTotal)}
+               </button>`}
           ${paidHistory.length?`<button class="history-btn" onclick="toggleHistory('hist-${cardId}')"><i class="ti ti-history"></i> History (${paidHistory.length})</button>`:''}
         </div>
 
@@ -1706,6 +1751,17 @@ function payBill(cardId, cardName, periodKey, amount){
   renderReconcile();
   renderDashboard();
   showToast(`${cardName} bill marked as paid! ${txnIds.length} transaction${txnIds.length!==1?'s':''} reconciled in sheet.`);
+}
+
+function unpayBill(cardId, cardName, periodKey){
+  if(!confirm(`Undo payment for ${cardName} — ${periodKey}? This will mark the current cycle as unpaid again.`)) return;
+  state.ccPayments = (state.ccPayments||[]).filter(p=>
+    !(( p.cardId===cardId || p.cardName===cardName ) && p.periodKey===periodKey)
+  );
+  saveState();
+  renderReconcile();
+  renderDashboard();
+  showToast(`Payment undone for ${cardName}. Cycle is unpaid again.`);
 }
 
 function addCCCard(){
