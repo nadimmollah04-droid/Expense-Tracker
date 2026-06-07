@@ -236,6 +236,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .script-modal{width:520px;max-width:95vw}
 .script-modal textarea{width:100%;height:240px;font-family:'DM Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-xs);padding:12px;resize:none;color:var(--text);outline:none;line-height:1.6}
 
+/* DRILL-DOWN MODAL */
+.drill-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+.drill-overlay.open{display:flex}
+.drill-sheet{background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:680px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(0,0,0,0.18);animation:slideUp 0.22s ease}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.drill-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:10px auto 0}
+.drill-header{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.drill-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.drill-title .drill-badge{font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px}
+.drill-close{width:28px;height:28px;border:none;background:var(--surface2);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text2);transition:background 0.15s}
+.drill-close:hover{background:var(--border)}
+.drill-summary{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;gap:20px;flex-shrink:0;flex-wrap:wrap;background:var(--surface2)}
+.drill-sum-item{display:flex;flex-direction:column;gap:2px}
+.drill-sum-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;color:var(--text3)}
+.drill-sum-val{font-size:18px;font-weight:600}
+.drill-body{overflow-y:auto;padding:14px 20px;flex:1}
+.drill-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+.drill-empty i{font-size:32px;display:block;margin-bottom:8px;opacity:0.4}
+.metric-card.clickable,.alltime-card.clickable,.invest-sector-card.clickable,.bank-card.clickable,.cc-dash-card.clickable,.loan-summary-card.clickable{cursor:pointer;transition:box-shadow 0.15s,transform 0.12s,border-color 0.15s}
+.metric-card.clickable:hover,.alltime-card.clickable:hover,.invest-sector-card.clickable:hover{box-shadow:0 4px 16px rgba(0,0,0,0.10);transform:translateY(-1px);border-color:var(--border2)}
+.bank-card.clickable:hover,.cc-dash-card.clickable:hover,.loan-summary-card.clickable:hover{box-shadow:0 4px 16px rgba(0,0,0,0.10);transform:translateY(-1px)}
+
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--text);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:300;opacity:0;transition:all 0.25s;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -844,6 +866,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- DRILL-DOWN MODAL -->
+<div class="drill-overlay" id="drillOverlay" onclick="closeDrill(event)">
+  <div class="drill-sheet" id="drillSheet">
+    <div class="drill-handle"></div>
+    <div class="drill-header">
+      <div class="drill-title" id="drillTitle"></div>
+      <button class="drill-close" onclick="closeDrill()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="drill-summary" id="drillSummary"></div>
+    <div class="drill-body" id="drillBody"></div>
+  </div>
+</div>
+
 <!-- ADD USER MODAL -->
 <div class="modal-overlay" id="addUserModal">
   <div class="modal">
@@ -1232,40 +1267,44 @@ function renderDashboard(){
   const expChgHtml = chg===null ? '' :
     `<span style="font-size:11px;font-weight:600;color:${chg>0?'var(--expense)':'var(--income)'}">${chg>0?'▲':'▼'}${Math.abs(chg)}% vs prev</span>`;
 
+  // Store current selection for drill callbacks
+  window._drillSelTxns = selTxns;
+  window._drillAllTxns = allTxns;
+
   document.getElementById('summaryCards').innerHTML = `
-    <div class="metric-card">
+    <div class="metric-card clickable" onclick="drillIncome(window._drillSelTxns)">
       <div class="m-label" style="color:var(--income)"><i class="ti ti-trending-up"></i> Income</div>
       <div class="m-value income">${fmt(mIncome)}</div>
-      <div class="m-sub">${selTxns.filter(t=>t.type==='income').length} transactions</div>
+      <div class="m-sub">${selTxns.filter(t=>t.type==='income').length} transactions <i class="ti ti-chevron-right" style="font-size:10px;opacity:0.5"></i></div>
     </div>
-    <div class="metric-card">
+    <div class="metric-card clickable" onclick="drillExpense(window._drillSelTxns)">
       <div class="m-label" style="color:var(--expense)"><i class="ti ti-trending-down"></i> Expenses</div>
       <div class="m-value expense">${fmt(mExpense)}</div>
-      <div class="m-sub">${expChgHtml||selTxns.filter(t=>t.type==='expense').length+' transactions'}</div>
+      <div class="m-sub">${expChgHtml||selTxns.filter(t=>t.type==='expense').length+' transactions <i class="ti ti-chevron-right" style="font-size:10px;opacity:0.5"></i>'}</div>
     </div>
-    <div class="metric-card">
+    <div class="metric-card clickable" onclick="drillInvest(window._drillSelTxns)">
       <div class="m-label" style="color:var(--invest)"><i class="ti ti-chart-candle"></i> Invested</div>
       <div class="m-value" style="color:var(--invest)">${fmt(mInvest)}</div>
-      <div class="m-sub">${selTxns.filter(t=>t.type==='investment').length} investments</div>
+      <div class="m-sub">${selTxns.filter(t=>t.type==='investment').length} investments <i class="ti ti-chevron-right" style="font-size:10px;opacity:0.5"></i></div>
     </div>
-    <div class="metric-card">
+    <div class="metric-card clickable" onclick="drillNet(window._drillSelTxns)">
       <div class="m-label"><i class="ti ti-scale"></i> Net ${isCurrent?'This Month':selMeta.label}</div>
       <div class="m-value ${mNet>=0?'positive':'negative'}">${fmt(mNet)}</div>
-      <div class="m-sub">Savings: ${mIncome>0?Math.round((mNet/mIncome)*100):0}%</div>
+      <div class="m-sub">Savings: ${mIncome>0?Math.round((mNet/mIncome)*100):0}% <i class="ti ti-chevron-right" style="font-size:10px;opacity:0.5"></i></div>
     </div>
-    <div class="metric-card">
+    <div class="metric-card clickable" onclick="drillCC(window._drillSelTxns)">
       <div class="m-label" style="color:var(--cc)"><i class="ti ti-credit-card"></i> CC Spent</div>
       <div class="m-value cc">${fmt(ccExp)}</div>
-      <div class="m-sub">${selTxns.filter(t=>(t.type==='expense'||t.type==='loan')&&t.payment_mode==='Credit Card').length} CC txns</div>
+      <div class="m-sub">${selTxns.filter(t=>(t.type==='expense'||t.type==='loan')&&t.payment_mode==='Credit Card').length} CC txns <i class="ti ti-chevron-right" style="font-size:10px;opacity:0.5"></i></div>
     </div>`;
 
   // ── All-time totals (always fixed) ──
   const savRate = allIncome > 0 ? Math.round(((allIncome-allExpense)/allIncome)*100) : 0;
   document.getElementById('alltimeCards').innerHTML = `
-    <div class="alltime-card"><div class="at-label">Total Income</div><div class="at-val income">${fmt(allIncome)}</div></div>
-    <div class="alltime-card"><div class="at-label">Total Expense</div><div class="at-val expense">${fmt(allExpense)}</div></div>
-    <div class="alltime-card"><div class="at-label">Total Invested</div><div class="at-val" style="color:var(--invest)">${fmt(allInvest)}</div></div>
-    <div class="alltime-card"><div class="at-label">Net Savings</div><div class="at-val ${(allIncome-allExpense-allInvest)>=0?'positive':'negative'}">${fmt(allIncome-allExpense-allInvest)}</div></div>
+    <div class="alltime-card clickable" onclick="drillAlltimeIncome(window._drillAllTxns)"><div class="at-label">Total Income</div><div class="at-val income">${fmt(allIncome)}</div></div>
+    <div class="alltime-card clickable" onclick="drillAlltimeExpense(window._drillAllTxns)"><div class="at-label">Total Expense</div><div class="at-val expense">${fmt(allExpense)}</div></div>
+    <div class="alltime-card clickable" onclick="drillAlltimeInvest(window._drillAllTxns)"><div class="at-label">Total Invested</div><div class="at-val" style="color:var(--invest)">${fmt(allInvest)}</div></div>
+    <div class="alltime-card clickable" onclick="drillAlltimeNet(window._drillAllTxns)"><div class="at-label">Net Savings</div><div class="at-val ${(allIncome-allExpense-allInvest)>=0?'positive':'negative'}">${fmt(allIncome-allExpense-allInvest)}</div></div>
     <div class="alltime-card"><div class="at-label">Savings Rate</div><div class="at-val" style="color:var(--income)">${savRate}%</div></div>`;
 
   // ── Category bars (selected month) ──
@@ -1291,7 +1330,7 @@ function renderDashboard(){
   });
   document.getElementById('bankSummary').innerHTML = Object.keys(bankTotals).length
     ? Object.entries(bankTotals).sort((a,b)=>b[1].amt-a[1].amt).map(([k,v])=>`
-        <div class="bank-card">
+        <div class="bank-card clickable" onclick="drillBankCard(window._drillSelTxns,'${k.replace(/'/g,"\\'")}')">
           <div class="b-name"><i class="ti ti-building-bank"></i>${k}</div>
           <div class="b-amt">${fmt(v.amt)}</div>
           <div class="b-sub">${v.count} UPI transaction${v.count!==1?'s':''}</div>
@@ -1303,7 +1342,9 @@ function renderDashboard(){
   selTxns.filter(t=>t.type==='investment').forEach(t=>{ const s=t.invest_sector||'Other'; secTotals[s]=(secTotals[s]||0)+t.amount; });
   document.getElementById('investSummaryDash').innerHTML = Object.keys(secTotals).length
     ? Object.entries(secTotals).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
-        <div class="invest-sector-card"><div class="is-name">${k}</div><div class="is-amt">${fmt(v)}</div></div>`).join('')
+        <div class="invest-sector-card clickable" onclick="drillInvestSector(window._drillSelTxns,'${k.replace(/'/g,"\\'")}')">
+          <div class="is-name">${k}</div><div class="is-amt">${fmt(v)}</div>
+        </div>`).join('')
     : `<div class="empty" style="padding:16px"><i class="ti ti-chart-candle"></i>No investments for ${selMeta.label}</div>`;
 
   // ── CC Card Summary (selected month) ──
@@ -1322,7 +1363,7 @@ function renderDashboard(){
         const topCats = Object.entries(v.cats).sort((a,b)=>b[1]-a[1]).slice(0,3)
           .map(([c,a])=>`<span class="cc-dash-cat">${c} ${fmt(a)}</span>`).join('');
         const barPct = (v.amt/maxCC*100).toFixed(0);
-        return `<div class="bank-card cc-dash-card">
+        return `<div class="bank-card cc-dash-card clickable" onclick="drillCCCard(window._drillSelTxns,'${card.replace(/'/g,"\\'")}')">
           <div class="b-name"><i class="ti ti-credit-card"></i>${card}</div>
           <div class="b-amt cc">${fmt(v.amt)}</div>
           <div class="cc-dash-bar-track"><div class="cc-dash-bar-fill" style="width:${barPct}%"></div></div>
@@ -1980,8 +2021,8 @@ function renderLoanSummaryDash(allTxns){
   }
   el.innerHTML = `<div class="bank-grid">${active.sort((a,b)=>(b[1].given-b[1].returned)-(a[1].given-a[1].returned)).map(([person,v])=>{
     const outstanding = v.given - v.returned;
-    return `<div class="loan-summary-card">
-      <button class="loan-clear-btn" onclick="clearLoan('${person}')" title="Mark as fully cleared">✓ Clear</button>
+    return `<div class="loan-summary-card clickable" onclick="drillLoanPerson(window._drillAllTxns,'${person.replace(/'/g,"\\'")}')">
+      <button class="loan-clear-btn" onclick="event.stopPropagation();clearLoan('${person}')" title="Mark as fully cleared">✓ Clear</button>
       <div class="ls-name"><i class="ti ti-user"></i>${person}${v.relation?' <span style="font-size:10px;opacity:0.7">(${v.relation})</span>':''}</div>
       <div class="ls-amt">${fmt(outstanding)}</div>
       <div class="ls-sub">Given: ${fmt(v.given)} · Returned: ${fmt(v.returned)}</div>
@@ -2465,6 +2506,162 @@ document.getElementById('inc-date').value = today;
 document.getElementById('inv-date').value = today;
 document.getElementById('loan-date').value = today;
 document.getElementById('loanret-date').value = today;
+
+// ─── DRILL-DOWN MODAL ───────────────────────────────────────────────
+function openDrill(config){
+  // config: { title, icon, color, txns, summaryItems }
+  // summaryItems: [{label, value, color?}]
+  const overlay = document.getElementById('drillOverlay');
+  const titleEl = document.getElementById('drillTitle');
+  const summaryEl = document.getElementById('drillSummary');
+  const bodyEl = document.getElementById('drillBody');
+
+  titleEl.innerHTML = `<span style="width:28px;height:28px;border-radius:6px;background:${config.color+'22'};color:${config.color};display:inline-flex;align-items:center;justify-content:center;font-size:15px"><i class="ti ti-${config.icon}"></i></span>${config.title}`;
+
+  summaryEl.innerHTML = (config.summaryItems||[]).map(s=>
+    `<div class="drill-sum-item">
+      <div class="drill-sum-label">${s.label}</div>
+      <div class="drill-sum-val" style="color:${s.color||'var(--text)'}">${s.value}</div>
+    </div>`
+  ).join('');
+
+  const txns = (config.txns||[]).sort((a,b)=>b.timestamp-a.timestamp);
+  bodyEl.innerHTML = txns.length
+    ? `<div class="txn-list">${txns.map(t=>txnHTML(t)).join('')}</div>`
+    : `<div class="drill-empty"><i class="ti ti-receipt-off"></i>No transactions found</div>`;
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrill(e){
+  if(e && e.target !== document.getElementById('drillOverlay')) return;
+  document.getElementById('drillOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function drillIncome(selTxns){
+  const txns = selTxns.filter(t=>t.type==='income');
+  openDrill({title:'Income',icon:'trending-up',color:'var(--income)',txns,
+    summaryItems:[
+      {label:'Total',value:fmt(txns.reduce((s,t)=>s+t.amount,0)),color:'var(--income)'},
+      {label:'Transactions',value:txns.length}
+    ]});
+}
+function drillExpense(selTxns){
+  const txns = selTxns.filter(t=>t.type==='expense');
+  openDrill({title:'Expenses',icon:'trending-down',color:'var(--expense)',txns,
+    summaryItems:[
+      {label:'Total',value:fmt(txns.reduce((s,t)=>s+t.amount,0)),color:'var(--expense)'},
+      {label:'Transactions',value:txns.length}
+    ]});
+}
+function drillInvest(selTxns){
+  const txns = selTxns.filter(t=>t.type==='investment');
+  openDrill({title:'Investments',icon:'chart-candle',color:'var(--invest)',txns,
+    summaryItems:[
+      {label:'Total Invested',value:fmt(txns.reduce((s,t)=>s+t.amount,0)),color:'var(--invest)'},
+      {label:'Transactions',value:txns.length}
+    ]});
+}
+function drillNet(selTxns){
+  const inc = selTxns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const exp = selTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const inv = selTxns.filter(t=>t.type==='investment').reduce((s,t)=>s+t.amount,0);
+  const net = inc-exp-inv;
+  openDrill({title:'Net Savings — All Transactions',icon:'scale',color:net>=0?'var(--income)':'var(--expense)',
+    txns:selTxns.filter(t=>['income','expense','investment'].includes(t.type)),
+    summaryItems:[
+      {label:'Income',value:fmt(inc),color:'var(--income)'},
+      {label:'Expense',value:fmt(exp),color:'var(--expense)'},
+      {label:'Invested',value:fmt(inv),color:'var(--invest)'},
+      {label:'Net',value:fmt(net),color:net>=0?'var(--income)':'var(--expense)'}
+    ]});
+}
+function drillCC(selTxns){
+  const txns = selTxns.filter(t=>(t.type==='expense'||t.type==='loan')&&t.payment_mode==='Credit Card');
+  openDrill({title:'Credit Card Transactions',icon:'credit-card',color:'var(--cc)',txns,
+    summaryItems:[
+      {label:'Total',value:fmt(txns.reduce((s,t)=>s+t.amount,0)),color:'var(--cc)'},
+      {label:'Transactions',value:txns.length}
+    ]});
+}
+function drillAlltimeIncome(allTxns){
+  const txns = allTxns.filter(t=>t.type==='income');
+  openDrill({title:'All-time Income',icon:'trending-up',color:'var(--income)',txns,
+    summaryItems:[
+      {label:'Total',value:fmt(txns.reduce((s,t)=>s+t.amount,0)),color:'var(--income)'},
+      {label:'Transactions',value:txns.length}
+    ]});
+}
+function drillAlltimeExpense(allTxns){
+  const txns = allTxns.filter(t=>t.type==='expense');
+  openDrill({title:'All-time Expenses',icon:'trending-down',color:'var(--expense)',txns,
+    summaryItems:[
+      {label:'Total',value:fmt(txns.reduce((s,t)=>s+t.amount,0)),color:'var(--expense)'},
+      {label:'Transactions',value:txns.length}
+    ]});
+}
+function drillAlltimeInvest(allTxns){
+  const txns = allTxns.filter(t=>t.type==='investment');
+  openDrill({title:'All-time Investments',icon:'chart-candle',color:'var(--invest)',txns,
+    summaryItems:[
+      {label:'Total',value:fmt(txns.reduce((s,t)=>s+t.amount,0)),color:'var(--invest)'},
+      {label:'Transactions',value:txns.length}
+    ]});
+}
+function drillAlltimeNet(allTxns){
+  const inc = allTxns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const exp = allTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const inv = allTxns.filter(t=>t.type==='investment').reduce((s,t)=>s+t.amount,0);
+  const net = inc-exp-inv;
+  openDrill({title:'All-time Net Savings',icon:'scale',color:net>=0?'var(--income)':'var(--expense)',
+    txns:allTxns.filter(t=>['income','expense','investment'].includes(t.type)),
+    summaryItems:[
+      {label:'Income',value:fmt(inc),color:'var(--income)'},
+      {label:'Expense',value:fmt(exp),color:'var(--expense)'},
+      {label:'Invested',value:fmt(inv),color:'var(--invest)'},
+      {label:'Net',value:fmt(net),color:net>=0?'var(--income)':'var(--expense)'}
+    ]});
+}
+function drillBankCard(allTxns, bank){
+  const txns = allTxns.filter(t=>t.type==='expense'&&t.payment_mode==='UPI'&&t.upi_bank===bank);
+  openDrill({title:`UPI — ${bank}`,icon:'building-bank',color:'#1a5db5',txns,
+    summaryItems:[
+      {label:'Total Spent',value:fmt(txns.reduce((s,t)=>s+t.amount,0)),color:'#1a5db5'},
+      {label:'Transactions',value:txns.length}
+    ]});
+}
+function drillCCCard(allTxns, card){
+  const txns = allTxns.filter(t=>(t.type==='expense'||t.type==='loan')&&t.payment_mode==='Credit Card'&&(t.credit_card||'Credit Card')===card);
+  openDrill({title:`${card}`,icon:'credit-card',color:'var(--cc)',txns,
+    summaryItems:[
+      {label:'Total',value:fmt(txns.reduce((s,t)=>s+t.amount,0)),color:'var(--cc)'},
+      {label:'Transactions',value:txns.length}
+    ]});
+}
+function drillInvestSector(allTxns, sector){
+  const txns = allTxns.filter(t=>t.type==='investment'&&(t.invest_sector||'Other')===sector);
+  openDrill({title:`Investment — ${sector}`,icon:'chart-candle',color:'var(--invest)',txns,
+    summaryItems:[
+      {label:'Total',value:fmt(txns.reduce((s,t)=>s+t.amount,0)),color:'var(--invest)'},
+      {label:'Transactions',value:txns.length}
+    ]});
+}
+function drillLoanPerson(allTxns, person){
+  const txns = allTxns.filter(t=>(t.type==='loan'||t.type==='loan_return')&&(t.loan_person||t.source)===person);
+  const given = txns.filter(t=>t.type==='loan').reduce((s,t)=>s+t.amount,0);
+  const returned = txns.filter(t=>t.type==='loan_return').reduce((s,t)=>s+t.amount,0);
+  openDrill({title:`Loan — ${person}`,icon:'users',color:'var(--loan)',txns,
+    summaryItems:[
+      {label:'Given',value:fmt(given),color:'var(--loan)'},
+      {label:'Returned',value:fmt(returned),color:'var(--income)'},
+      {label:'Outstanding',value:fmt(given-returned),color:given>returned?'var(--loan)':'var(--income)'}
+    ]});
+}
+// Escape key to close
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') { document.getElementById('drillOverlay').classList.remove('open'); document.body.style.overflow=''; } });
+// ────────────────────────────────────────────────────────────────────
 
 loadState();
 // If sheet connected, sync first — otherwise render local data immediately
