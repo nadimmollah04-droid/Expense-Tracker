@@ -1618,9 +1618,14 @@ function renderReconcile(){
         </div>
         <div class="cc-stmt-header-right">
           <div class="cc-stmt-amount" style="color:${isCurPaid?'var(--income)':'var(--cc)'}">${fmt(curTotal)}</div>
-          ${isCurPaid
-            ? `<span class="due-badge paid"><i class="ti ti-check"></i> Paid this cycle</span>`
-            : `<span class="due-badge ${dueInfo.cls}"><i class="ti ti-clock"></i> ${dueInfo.label}</span>`}
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+            ${isCurPaid
+              ? `<span class="due-badge paid"><i class="ti ti-check"></i> Paid this cycle</span>`
+              : ''}
+            <span class="due-badge ${isCurPaid?'paid':dueInfo.cls}" style="${isCurPaid?'opacity:0.55':''}">
+              <i class="ti ti-${isCurPaid?'calendar-check':'clock'}"></i> ${dueInfo.label}
+            </span>
+          </div>
         </div>
       </div>
       <div class="cc-stmt-body">
