@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -221,39 +222,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 /* EMPTY */
 .empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
 .empty i{font-size:32px;display:block;margin-bottom:8px;opacity:0.4}
-
-/* AI INSIGHTS */
-.ai-insights-card{background:linear-gradient(135deg,#1a1917 0%,#2d2b28 100%);border:1px solid #3a3835;border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,0.12)}
-.ai-insights-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
-.ai-insights-title{display:flex;align-items:center;gap:8px;color:#fff;font-size:14px;font-weight:600}
-.ai-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#6C63FF,#3C3489);color:#fff;border-radius:20px;font-size:11px;font-weight:600;padding:3px 10px;letter-spacing:0.3px}
-.ai-search-row{display:flex;gap:8px;margin-bottom:14px}
-.ai-search-input{flex:1;padding:10px 14px;border:1px solid #3a3835;border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;background:#0e0d0c;color:#fff;outline:none;transition:border 0.15s}
-.ai-search-input::placeholder{color:#5a5855}
-.ai-search-input:focus{border-color:#6C63FF}
-.ai-ask-btn{padding:10px 18px;background:linear-gradient(135deg,#6C63FF,#3C3489);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:opacity 0.15s}
-.ai-ask-btn:hover{opacity:0.88}
-.ai-ask-btn:disabled{opacity:0.5;cursor:default}
-.ai-quick-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.ai-chip{padding:5px 12px;border:1px solid #3a3835;border-radius:20px;font-size:11px;font-weight:500;color:#b0aea8;background:#1e1d1a;cursor:pointer;transition:all 0.15s;white-space:nowrap}
-.ai-chip:hover{border-color:#6C63FF;color:#fff;background:#2a2760}
-.ai-response-area{min-height:60px;background:#0e0d0c;border:1px solid #2a2826;border-radius:var(--radius-sm);padding:14px 16px;color:#e0dedd;font-size:13px;line-height:1.7;display:none}
-.ai-response-area.visible{display:block}
-.ai-response-area.loading{display:flex;align-items:center;gap:8px;color:#7a7875}
-.ai-typing{display:flex;gap:4px;align-items:center}
-.ai-dot{width:6px;height:6px;border-radius:50%;background:#6C63FF;animation:aiPulse 1.2s ease-in-out infinite}
-.ai-dot:nth-child(2){animation-delay:0.2s}
-.ai-dot:nth-child(3){animation-delay:0.4s}
-@keyframes aiPulse{0%,80%,100%{opacity:0.3;transform:scale(0.8)}40%{opacity:1;transform:scale(1)}}
-.ai-response-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#6C63FF;margin-bottom:8px;display:flex;align-items:center;gap:5px}
-.ai-response-text{white-space:pre-wrap}
-.ai-history-toggle{font-size:11px;color:#5a5855;cursor:pointer;margin-top:10px;display:inline-flex;align-items:center;gap:4px;transition:color 0.15s}
-.ai-history-toggle:hover{color:#b0aea8}
-.ai-history{display:none;margin-top:10px;border-top:1px solid #2a2826;padding-top:10px}
-.ai-history.open{display:block}
-.ai-history-item{padding:8px 10px;border-radius:var(--radius-xs);background:#161513;margin-bottom:6px;font-size:12px;color:#9b9890;line-height:1.5;cursor:pointer;transition:background 0.15s;border:1px solid transparent}
-.ai-history-item:hover{background:#1e1d1a;border-color:#2a2826;color:#e0dedd}
-.ai-history-item .ai-hi-q{font-weight:600;color:#b0aea8;margin-bottom:3px}
 
 /* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
@@ -862,37 +830,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <!-- TRENDS -->
 <div id="page-trends" class="page">
-
-  <!-- AI Insights Panel -->
-  <div class="ai-insights-card">
-    <div class="ai-insights-header">
-      <div class="ai-insights-title">
-        <i class="ti ti-sparkles" style="color:#6C63FF;font-size:18px"></i>
-        AI Spend Analyst
-      </div>
-      <div class="ai-badge"><i class="ti ti-robot" style="font-size:11px"></i> Powered by Claude</div>
-    </div>
-    <div class="ai-search-row">
-      <input class="ai-search-input" id="aiSearchInput" type="text" placeholder="Ask anything about your spends… e.g. Where am I overspending?" onkeydown="if(event.key==='Enter')askAI()">
-      <button class="ai-ask-btn" id="aiAskBtn" onclick="askAI()"><i class="ti ti-send"></i> Ask</button>
-    </div>
-    <div class="ai-quick-chips" id="aiQuickChips">
-      <span class="ai-chip" onclick="askAIPrompt('Summarize my spending patterns this month')">📊 Monthly Summary</span>
-      <span class="ai-chip" onclick="askAIPrompt('Where am I overspending and how can I cut costs?')">✂️ Cut Costs</span>
-      <span class="ai-chip" onclick="askAIPrompt('Compare my income vs expenses and give savings advice')">💰 Savings Tips</span>
-      <span class="ai-chip" onclick="askAIPrompt('Which expense categories grew the most compared to last month?')">📈 Category Growth</span>
-      <span class="ai-chip" onclick="askAIPrompt('How is my investment discipline? Am I investing enough?')">🎯 Investment Check</span>
-      <span class="ai-chip" onclick="askAIPrompt('Give me a financial health score and actionable improvements')">⭐ Health Score</span>
-    </div>
-    <div class="ai-response-area" id="aiResponseArea">
-      <div class="ai-response-label"><i class="ti ti-sparkles"></i> AI Insight</div>
-      <div class="ai-response-text" id="aiResponseText"></div>
-    </div>
-    <div id="aiHistoryToggle" class="ai-history-toggle" style="display:none" onclick="toggleAIHistory()">
-      <i class="ti ti-history"></i> <span id="aiHistoryCount">0</span> previous questions
-    </div>
-    <div class="ai-history" id="aiHistory"></div>
-  </div>
 
   <!-- Month-on-month summary cards -->
   <div class="mom-grid" id="momCards"></div>
@@ -2909,172 +2846,6 @@ function drillLoanPerson(allTxns, person){
 // Escape key to close
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') { document.getElementById('drillOverlay').classList.remove('open'); document.body.style.overflow=''; } });
 // ────────────────────────────────────────────────────────────────────
-
-// ── AI INSIGHTS ──────────────────────────────────────────────────────
-const aiHistory = [];
-
-function buildFinancialContext() {
-  const user = state.activeUser;
-  const allTxns = state.transactions.filter(t => t.user === user);
-
-  const now = new Date();
-  const months = [];
-  for (let i = 2; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    months.push({
-      key: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,
-      label: d.toLocaleString('default', {month:'long', year:'numeric'})
-    });
-  }
-
-  const mdata = months.map(m => {
-    const txns = allTxns.filter(t => t.date.startsWith(m.key));
-    const income = txns.filter(t => t.type === 'income').reduce((s,t) => s+t.amount, 0);
-    const expense = txns.filter(t => t.type === 'expense').reduce((s,t) => s+t.amount, 0);
-    const invest = txns.filter(t => t.type === 'investment').reduce((s,t) => s+t.amount, 0);
-    const net = income - expense - invest;
-    const catMap = {};
-    txns.filter(t => t.type === 'expense').forEach(t => { catMap[t.category] = (catMap[t.category]||0) + t.amount; });
-    const pmMap = {};
-    txns.filter(t => t.type === 'expense').forEach(t => { pmMap[t.payment_mode] = (pmMap[t.payment_mode]||0) + t.amount; });
-    const incSources = {};
-    txns.filter(t => t.type === 'income').forEach(t => { incSources[t.category||t.source||'Other'] = (incSources[t.category||t.source||'Other']||0) + t.amount; });
-    const investSectors = {};
-    txns.filter(t => t.type === 'investment').forEach(t => { investSectors[t.invest_sector||'Other'] = (investSectors[t.invest_sector||'Other']||0) + t.amount; });
-    return { ...m, income, expense, invest, net, catMap, pmMap, incSources, investSectors };
-  });
-
-  const totalIncome = allTxns.filter(t => t.type === 'income').reduce((s,t) => s+t.amount, 0);
-  const totalExpense = allTxns.filter(t => t.type === 'expense').reduce((s,t) => s+t.amount, 0);
-  const totalInvest = allTxns.filter(t => t.type === 'investment').reduce((s,t) => s+t.amount, 0);
-  const totalLoans = allTxns.filter(t => t.type === 'loan').reduce((s,t) => s+t.amount, 0);
-  const totalLoanReturns = allTxns.filter(t => t.type === 'loan_return').reduce((s,t) => s+t.amount, 0);
-
-  const fmtAmt = v => '₹' + Number(v).toLocaleString('en-IN');
-
-  let ctx = `USER FINANCIAL DATA (Indian Rupees ₹)\n\n`;
-  ctx += `=== MONTHLY BREAKDOWN (Last 3 Months) ===\n`;
-  mdata.forEach(m => {
-    ctx += `\n${m.label}:\n`;
-    ctx += `  Income: ${fmtAmt(m.income)} | Expenses: ${fmtAmt(m.expense)} | Invested: ${fmtAmt(m.invest)} | Net Savings: ${fmtAmt(m.net)}\n`;
-    if (Object.keys(m.catMap).length) {
-      ctx += `  Expense Categories: ${Object.entries(m.catMap).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}(${fmtAmt(v)})`).join(', ')}\n`;
-    }
-    if (Object.keys(m.incSources).length) {
-      ctx += `  Income Sources: ${Object.entries(m.incSources).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}(${fmtAmt(v)})`).join(', ')}\n`;
-    }
-    if (Object.keys(m.investSectors).length) {
-      ctx += `  Investment Sectors: ${Object.entries(m.investSectors).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}(${fmtAmt(v)})`).join(', ')}\n`;
-    }
-    if (Object.keys(m.pmMap).length) {
-      ctx += `  Payment Modes: ${Object.entries(m.pmMap).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}(${fmtAmt(v)})`).join(', ')}\n`;
-    }
-  });
-
-  ctx += `\n=== ALL-TIME TOTALS ===\n`;
-  ctx += `Total Income: ${fmtAmt(totalIncome)}\nTotal Expenses: ${fmtAmt(totalExpense)}\nTotal Invested: ${fmtAmt(totalInvest)}\nOutstanding Loans Given: ${fmtAmt(Math.max(0, totalLoans - totalLoanReturns))}\n`;
-
-  if (allTxns.length === 0) ctx += `\nNote: No transactions recorded yet.\n`;
-
-  return ctx;
-}
-
-async function askAIPrompt(prompt) {
-  document.getElementById('aiSearchInput').value = prompt;
-  await askAI();
-}
-
-async function askAI() {
-  const input = document.getElementById('aiSearchInput');
-  const question = input.value.trim();
-  if (!question) return;
-
-  const btn = document.getElementById('aiAskBtn');
-  const responseArea = document.getElementById('aiResponseArea');
-  const responseText = document.getElementById('aiResponseText');
-
-  btn.disabled = true;
-  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> Thinking…';
-  responseArea.className = 'ai-response-area loading visible';
-  responseArea.innerHTML = `<div class="ai-typing"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><span style="margin-left:8px;color:#7a7875;font-size:13px">Analysing your spends…</span>`;
-
-  const financialContext = buildFinancialContext();
-
-  const systemPrompt = `You are an expert personal finance analyst for Indian users. You have access to the user's complete financial data below. Provide concise, actionable, and personalised insights in plain text. Use ₹ for amounts. Be specific with numbers from the data. Keep responses focused and under 200 words unless a detailed breakdown is specifically asked. Use bullet points sparingly — prefer short clear paragraphs.
-
-${financialContext}`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: question }]
-      }),
-    });
-
-    const data = await res.json();
-    const answer = data.content && data.content[0] && data.content[0].text
-      ? data.content[0].text
-      : 'Sorry, I could not generate a response. Please try again.';
-
-    // Save to history
-    aiHistory.unshift({ q: question, a: answer });
-    if (aiHistory.length > 10) aiHistory.pop();
-    renderAIHistory();
-
-    responseArea.className = 'ai-response-area visible';
-    responseArea.innerHTML = `<div class="ai-response-label"><i class="ti ti-sparkles"></i> AI Insight</div><div class="ai-response-text" id="aiResponseText">${answer.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
-    input.value = '';
-
-  } catch (err) {
-    responseArea.className = 'ai-response-area visible';
-    responseArea.innerHTML = `<div class="ai-response-label" style="color:#993c1d"><i class="ti ti-alert-circle"></i> Error</div><div class="ai-response-text" style="color:#993c1d">Could not connect to AI. Please check your connection and try again.</div>`;
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<i class="ti ti-send"></i> Ask';
-  }
-}
-
-function renderAIHistory() {
-  const toggle = document.getElementById('aiHistoryToggle');
-  const histEl = document.getElementById('aiHistory');
-  const countEl = document.getElementById('aiHistoryCount');
-  if (aiHistory.length === 0) { toggle.style.display = 'none'; return; }
-  toggle.style.display = 'inline-flex';
-  countEl.textContent = aiHistory.length;
-  histEl.innerHTML = aiHistory.map((item, i) => `
-    <div class="ai-history-item" onclick="replayAI(${i})">
-      <div class="ai-hi-q">Q: ${item.q.replace(/</g,'&lt;')}</div>
-      <div>${item.a.replace(/</g,'&lt;').substring(0, 120)}…</div>
-    </div>`).join('');
-}
-
-function replayAI(idx) {
-  const item = aiHistory[idx];
-  if (!item) return;
-  const responseArea = document.getElementById('aiResponseArea');
-  responseArea.className = 'ai-response-area visible';
-  responseArea.innerHTML = `<div class="ai-response-label"><i class="ti ti-history"></i> Previous Answer</div><div class="ai-response-text">${item.a.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
-  document.getElementById('aiSearchInput').value = item.q;
-}
-
-function toggleAIHistory() {
-  const histEl = document.getElementById('aiHistory');
-  histEl.classList.toggle('open');
-}
-
-// Spinner keyframe
-const spinStyle = document.createElement('style');
-spinStyle.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
-document.head.appendChild(spinStyle);
-// ─────────────────────────────────────────────────────────────────────
 
 loadState();
 // If sheet connected, sync first — otherwise render local data immediately
