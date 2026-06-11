@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2207,7 +2206,7 @@ function renderLoanSummaryDash(allTxns){
     const outstanding = v.given - v.returned;
     return `<div class="loan-summary-card clickable" onclick="drillLoanPerson(window._drillAllTxns,'${person.replace(/'/g,"\\'")}')">
       <button class="loan-clear-btn" onclick="event.stopPropagation();clearLoan('${person}')" title="Mark as fully cleared">✓ Clear</button>
-      <div class="ls-name"><i class="ti ti-user"></i>${person}${v.relation?' <span style="font-size:10px;opacity:0.7">(${v.relation})</span>':''}</div>
+      <div class="ls-name"><i class="ti ti-user"></i>${person}${v.relation?` <span style="font-size:10px;opacity:0.7">(${v.relation})</span>`:''}</div>
       <div class="ls-amt">${fmt(outstanding)}</div>
       <div class="ls-sub">Given: ${fmt(v.given)} · Returned: ${fmt(v.returned)}</div>
     </div>`;
@@ -2283,8 +2282,8 @@ function renderLoans(){
 
 function clearLoan(person){
   if(!confirm(`Mark all loans from ${person} as cleared? This records a return entry for the outstanding balance.`)) return;
-  const uid = state.activeUser;
-  const allTxns = state.transactions.filter(t=>t.user===uid);
+  const activeUid = state.activeUser;
+  const allTxns = state.transactions.filter(t=>t.user===activeUid);
   const byPerson = getLoansByPerson(allTxns);
   const v = byPerson[person];
   if(!v) return;
